@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "844225663348",
+    "project_id": "dr-bread",
+    "storage_bucket": "dr-bread.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:844225663348:android:b316cde92a843808c59c21",
+        "android_client_info": {
+          "package_name": "com.dhkim.drbread.dr_bread_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAr55J4_cBwZ2X0VL6PxNRAwIj_W8nJga4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
