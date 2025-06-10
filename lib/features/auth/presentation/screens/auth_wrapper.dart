@@ -3,7 +3,7 @@ import 'package:dr_bread_app/features/auth/presentation/screens/splash_screen.da
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'login_screen.dart'; // 로그인 화면
-import 'main_recipe_list_screen.dart'; // TODO: 스플래시 스크린 임포트
+import '../../../recipe/presentation/screens/main_recipe_list_screen.dart'; // TODO: 스플래시 스크린 임포트
 
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
