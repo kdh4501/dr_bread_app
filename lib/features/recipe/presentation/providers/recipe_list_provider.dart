@@ -6,6 +6,9 @@ import '../../domain/usecases/get_recipes_usecase.dart'; // GetRecipesUseCase �
 import '../../domain/usecases/search_recipes_usecase.dart'; // SearchRecipesUseCase 임포트
 // TODO: 다른 UseCase (예: FilterRecipesUseCase) 필요시 임포트
 
+/*
+레시피 목록 화면에 필요한 모든 상태(데이터, 로딩 여부, 에러 메시지, 검색어, 필터 조건 등) 관리
+ */
 class RecipeListProvider with ChangeNotifier { // ChangeNotifier 상속 (with 키워드 사용)
   // Domain Layer의 UseCase들을 생성자로 주입받음
   final GetRecipesUseCase _getRecipesUseCase;
