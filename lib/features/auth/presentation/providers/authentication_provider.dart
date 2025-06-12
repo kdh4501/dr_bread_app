@@ -44,16 +44,16 @@ class AuthenticationProvider extends ChangeNotifier { // 또는 Riverpod의 Stat
         _currentUser = null; // 에러 발생 시 사용자 정보 비움
         // _isLoading = false; // 로딩 종료
         notifyListeners();
-        debugPrint('인증 상태 스트림 에러 발생: $error');
+        print('인증 상태 스트림 에러 발생: $error');
       },
       onDone: () {
         // _isLoading = false;
         notifyListeners();
-        debugPrint('인증 상태 스트림 종료');
+        print('인증 상태 스트림 종료');
       },
       cancelOnError: true,
     );
-    debugPrint('AuthProvider initialized and authStateChanges stream subscribed.');
+    print('AuthProvider initialized and authStateChanges stream subscribed.');
   }
 
   // Google 로그인 실행
