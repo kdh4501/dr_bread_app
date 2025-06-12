@@ -12,7 +12,20 @@
           "package_name": "com.dhkim.drbread.dr_bread_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "844225663348-1bghg4gghbk06mire2o12jv3uj20lb5m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dhkim.drbread.dr_bread_app",
+            "certificate_hash": "3828be6dff25c6efbdc7db395a936a6d90ce67d5"
+          }
+        },
+        {
+          "client_id": "844225663348-6v5ukj2ve28207qrad1tjsaa50j2tdes.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAr55J4_cBwZ2X0VL6PxNRAwIj_W8nJga4"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "844225663348-6v5ukj2ve28207qrad1tjsaa50j2tdes.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "844225663348-h1uvp246h5oq251jiadhjdmjlvoru4cg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.dhkim.drbread.drBreadApp"
+              }
+            }
+          ]
         }
       }
     }
