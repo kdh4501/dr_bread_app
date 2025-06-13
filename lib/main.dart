@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dr_bread_app/features/recipe/domain/repositories/recipe_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -54,6 +55,9 @@ void main() async {
         ChangeNotifierProvider<RecipeListProvider>( // <-- 추가!
           create: (_) => RecipeListProvider(getRecipesUseCase, searchRecipesUseCase), // <-- UseCase 주입!
           // lazy: false, // 앱 시작 시 바로 RecipeListProvider 생성 (선택 사항)
+        ),
+        Provider<RecipeRepository>( // <-- 추가!
+          create: (_) => recipeRepository, // <-- 위에서 생성한 RecipeRepositoryImpl 인스턴스 제공!
         ),
         // TODO: RecipeListProvider 등 레시피 관련 Provider 추가
         // ChangeNotifierProvider<RecipeListProvider>(

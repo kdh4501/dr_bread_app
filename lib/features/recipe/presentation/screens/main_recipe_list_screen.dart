@@ -1,3 +1,7 @@
+import 'package:dr_bread_app/features/recipe/domain/repositories/recipe_repository.dart';
+import 'package:dr_bread_app/features/recipe/domain/usecases/add_recipe_usecase.dart';
+import 'package:dr_bread_app/features/recipe/domain/usecases/get_recipe_detail_usecase.dart';
+import 'package:dr_bread_app/features/recipe/domain/usecases/update_recipe_usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; // Provider 사용
 import '../providers/recipe_list_provider.dart'; // RecipeListProvider 임포트
@@ -105,7 +109,25 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
           // 새 레시피 추가 화면으로 이동
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const AddRecipeScreen()),
+            MaterialPageRoute(
+                builder: (context) {
+                  final recipeRepository = Provider.of<RecipeRepository>(context, listen: false);
+                  return MultiProvider(
+                      providers: [
+                        Provider<AddRecipeUseCase>(
+                          create: (_) => AddRecipeUseCase(recipeRepository),
+                        ),
+                        Provider<UpdateRecipeUseCase>(
+                          create: (_) => UpdateRecipeUseCase(recipeRepository),
+                        ),
+                        Provider<GetRecipeDetailUseCase>(
+                          create: (_) => GetRecipeDetailUseCase(recipeRepository),
+                        ),
+                      ],
+                    child: const AddRecipeScreen(),
+                  );
+                }
+            ),
           );
         },
         tooltip: '새 레시피 추가', // 길게 눌렀을 때 나오는 설명
