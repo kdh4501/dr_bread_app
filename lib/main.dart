@@ -56,7 +56,7 @@ void main() async {
           create: (_) => RecipeListProvider(getRecipesUseCase, searchRecipesUseCase), // <-- UseCase 주입!
           // lazy: false, // 앱 시작 시 바로 RecipeListProvider 생성 (선택 사항)
         ),
-        Provider<RecipeRepository>( // <-- 추가!
+        Provider<RecipeRepository>( // 이것 추가 안하면 레시피 추가하기 화면 안열림
           create: (_) => recipeRepository, // <-- 위에서 생성한 RecipeRepositoryImpl 인스턴스 제공!
         ),
         // TODO: RecipeListProvider 등 레시피 관련 Provider 추가
