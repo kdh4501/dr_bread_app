@@ -4,6 +4,7 @@ import 'package:dr_bread_app/features/recipe/domain/usecases/update_recipe_useca
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart'; // Provider 사용
+import '../../domain/usecases/delete_recipe_usecase.dart';
 import '../../domain/usecases/upload_image_usecase.dart';
 import '../providers/recipe_list_provider.dart'; // RecipeListProvider 임포트
 import '../widgets/recipe_card.dart'; // RecipeCard 위젯 임포트
@@ -95,7 +96,28 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => RecipeDetailScreen(recipeId: recipe.uid), // 상세 화면으로 이동 시 레시피 ID 전달
+                      builder: (context) {
+                        // get_it에서 UseCase 인스턴스들을 직접 가져옴
+                        final getRecipeDetailUseCase = getIt<GetRecipeDetailUseCase>();
+                        final deleteRecipeUseCase = getIt<DeleteRecipeUseCase>();
+
+                        return MultiProvider( // 여러 Provider를 설정하기 위해 MultiProvider 사용
+                          providers: [
+                            // GetRecipeDetailUseCase Provider 설정
+                            Provider<GetRecipeDetailUseCase>(
+                              create: (_) => getRecipeDetailUseCase, // get_it에서 가져온 인스턴스 제공
+                            ),
+                            // DeleteRecipeUseCase Provider 설정
+                            Provider<DeleteRecipeUseCase>(
+                              create: (_) => deleteRecipeUseCase, // get_it에서 가져온 인스턴스 제공
+                            ),
+                            // TODO: 필요시 다른 Provider 추가
+                          ],
+                          // ↓↓↓↓↓ MultiProvider의 child는 RecipeDetailScreen 위젯이 되어야 함! ↓↓↓↓↓
+                          child: RecipeDetailScreen(recipeId: recipe.uid), // <-- RecipeDetailScreen 위젯! 레시피 ID 전달!
+                          // ↑↑↑↑↑ MultiProvider의 child는 RecipeDetailScreen 위젯이 되어야 함! ↑↑↑↑↑
+                        );
+                      }
                     ),
                   );
                 },
