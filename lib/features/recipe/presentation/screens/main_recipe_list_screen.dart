@@ -3,7 +3,9 @@ import 'package:dr_bread_app/features/recipe/domain/usecases/add_recipe_usecase.
 import 'package:dr_bread_app/features/recipe/domain/usecases/get_recipe_detail_usecase.dart';
 import 'package:dr_bread_app/features/recipe/domain/usecases/update_recipe_usecase.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart'; // Provider 사용
+import '../../domain/usecases/upload_image_usecase.dart';
 import '../providers/recipe_list_provider.dart'; // RecipeListProvider 임포트
 import '../widgets/recipe_card.dart'; // RecipeCard 위젯 임포트
 import 'add_recipe_screen.dart'; // 레시피 추가 화면 임포트
@@ -34,7 +36,7 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
     // Consumer 위젯을 사용하면 특정 부분만 리빌드하여 성능에 더 유리할 수 있음
     // 여기서는 전체 화면을 리빌드하는 Provider.of 사용
     final recipeListProvider = Provider.of<RecipeListProvider>(context);
-
+    final getIt = GetIt.instance;
     return Scaffold(
       appBar: AppBar(
         title: const Text('빵빵박사 레시피'), // 앱바 제목
@@ -111,18 +113,23 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
             context,
             MaterialPageRoute(
                 builder: (context) {
-                  final recipeRepository = Provider.of<RecipeRepository>(context, listen: false);
+                  // ↓↓↓↓↓ get_it에서 UseCase 인스턴스를 가져와서 Provider에 전달 ↓↓↓↓↓
+                  // RecipeRepository는 이제 get_it에 등록되어 있으므로 Provider로 가져올 필요 없음
+                  // final recipeRepository = context.read<RecipeRepository>(); // <-- 이 코드 삭제!
+
+                  // AddRecipeScreen에서 필요한 UseCase 인스턴스들을 get_it에서 직접 가져옴
+                  final addRecipeUseCase = getIt<AddRecipeUseCase>();
+                  final updateRecipeUseCase = getIt<UpdateRecipeUseCase>();
+                  final getRecipeDetailUseCase = getIt<GetRecipeDetailUseCase>();
+                  final uploadImageUseCase = getIt<UploadImageUseCase>(); // <-- 이미지 업로드 UseCase 가져옴
+
+                  // final recipeRepository = Provider.of<RecipeRepository>(context, listen: false);  // 주석 풀면 오류남.
                   return MultiProvider(
                       providers: [
-                        Provider<AddRecipeUseCase>(
-                          create: (_) => AddRecipeUseCase(recipeRepository),
-                        ),
-                        Provider<UpdateRecipeUseCase>(
-                          create: (_) => UpdateRecipeUseCase(recipeRepository),
-                        ),
-                        Provider<GetRecipeDetailUseCase>(
-                          create: (_) => GetRecipeDetailUseCase(recipeRepository),
-                        ),
+                        Provider<AddRecipeUseCase>(create: (_) => addRecipeUseCase,),
+                        Provider<UpdateRecipeUseCase>(create: (_) => updateRecipeUseCase,),
+                        Provider<GetRecipeDetailUseCase>(create: (_) => getRecipeDetailUseCase,),
+                        Provider<UploadImageUseCase>(create: (_) => uploadImageUseCase),
                       ],
                     child: const AddRecipeScreen(),
                   );
