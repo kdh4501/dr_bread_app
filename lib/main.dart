@@ -38,10 +38,6 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  final firebaseAuth = FirebaseAuth.instance;
-  final firebaseFirestore = FirebaseFirestore.instance;
-  final googleSignIn = GoogleSignIn(); // google_sign_in 패키지 사용
-
   // get_it 의존성 등록 함수
   setupDependencies();
 
