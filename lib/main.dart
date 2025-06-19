@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dr_bread_app/features/recipe/domain/repositories/recipe_repository.dart';
+import 'package:dr_bread_app/theme/app_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -128,31 +129,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: '빵빵박사', // 앱 이름
       // TODO: 네 '빵빵박사' 앱의 색상 팔레트, 폰트 등 테마 설정
-      theme: ThemeData(
-        primarySwatch: Colors.pink, // 예시 색상 (따뜻한 느낌?)
-        // colorScheme: ColorScheme.fromSeed(seedColor: Colors.pink),
-        useMaterial3: true, // Material 3 디자인 사용 여부
-        fontFamily: 'YourFont', // TODO: Google Fonts 등에서 다운받은 폰트 이름
-        textTheme: const TextTheme( // 텍스트 스타일 정의
-          titleLarge: TextStyle(fontWeight: FontWeight.bold),
-          bodyMedium: TextStyle(fontSize: 16),
-          // ... 필요한 텍스트 스타일 정의
-        ),
-        appBarTheme: const AppBarTheme( // 앱바 테마 설정
-          backgroundColor: Colors.pinkAccent,
-          foregroundColor: Colors.white, // 앱바 글씨/아이콘 색상
-        ),
-        cardTheme: CardTheme( // 카드 위젯 테마 설정 (레시피 목록 카드 등)
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-          elevation: 4.0,
-          margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        ),
-        floatingActionButtonTheme: FloatingActionButtonThemeData( // FAB 테마
-          backgroundColor: Colors.orangeAccent,
-          foregroundColor: Colors.white,
-        ),
-        // ... 기타 위젯 테마 설정
-      ),
+      theme: bbangbaksaTheme,
       debugShowCheckedModeBanner: false, // 디버그 배너 제거 (출시 시)
       // home 속성에 로그인 상태에 따라 화면을 분기하는 위젯 지정
       home: const AuthWrapper(), // AuthWrapper가 스플래시 -> 로그인/메인 전환 처리

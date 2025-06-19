@@ -14,6 +14,9 @@ const double kSpacingMedium = 16.0; // 기본 간격
 const double kSpacingLarge = 24.0; // 큰 간격
 const double kSpacingExtraLarge = 32.0; // 아주 큰 간격
 
+// --- UI 관련 상수 ---
+const double kIconSizeMedium = 24.0; // 기본 아이콘 크기
+const double kIconSizeLarge = 50.0; // 큰 아이콘 크기 (사진 추가 아이콘 등)
 
 // --- 데이터 관련 상수 ---
 const String kRecipesCollection = 'recipes'; // Firestore 레시피 컬렉션 이름
