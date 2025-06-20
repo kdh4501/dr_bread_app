@@ -125,11 +125,7 @@ class FirestoreRecipeDataSource { // 인터페이스 없이 바로 구현 시
       // final docRef = await _recipesCollection.add(recipeMap);
       final docRef = await _recipesCollection
           .add(recipeMap)
-          .timeout(Duration(seconds: 5))
-          .catchError((e) {
-        print('🔥 catchError fired: $e');
-        throw e;
-      });
+          .timeout(Duration(seconds: 5));
       print('FirestoreRecipeDataSource: Firestore add finished. Doc ID: ${docRef.id}'); // <-- Firestore 호출 완료 로그
 
       // 새로 생성된 문서의 ID 반환
