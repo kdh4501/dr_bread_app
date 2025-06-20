@@ -219,7 +219,16 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
         }
 
         // TODO: 저장/업데이트 성공 후 처리 (예: 이전 화면으로 돌아가기)
-        // 상세 화면에서 왔다면 상세 화면으로, 목록에서 왔다면 목록 화면으로
+        // 1. 성공 메시지 표시 (스낵바 추천)
+        ScaffoldMessenger.of(context).showSnackBar( // ScaffoldMessenger 사용
+          SnackBar(
+            content: Text(isEditing ? '레시피가 수정되었습니다!' : '레시피가 추가되었습니다!'), // 메시지 내용
+            backgroundColor: Theme.of(context).colorScheme.primary, // 테마 메인 색상 활용
+            duration: const Duration(seconds: 2), // 2초 동안 표시
+          ),
+        );
+
+        // 2. 화면 전환 (이전 화면으로 돌아가기)
         Navigator.pop(context, true); // 이전 화면으로 돌아가면서 성공 결과(true) 전달
 
         // TODO: SnackBar 등으로 사용자에게 저장 완료 알림 (옵션)

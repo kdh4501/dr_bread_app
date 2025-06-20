@@ -104,7 +104,7 @@ Future<void> setupDependencies() async {
   getIt.registerLazySingleton<GetRecipeDetailUseCase>(
           () => GetRecipeDetailUseCase(getIt<RecipeRepository>()));
   getIt.registerLazySingleton<AddRecipeUseCase>(
-          () => AddRecipeUseCase(getIt<RecipeRepository>()));
+          () => AddRecipeUseCase(getIt<RecipeRepository>(), getIt<AuthRepository>()));
   getIt.registerLazySingleton<UpdateRecipeUseCase>(
           () => UpdateRecipeUseCase(getIt<RecipeRepository>()));
   getIt.registerLazySingleton<DeleteRecipeUseCase>(

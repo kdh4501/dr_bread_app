@@ -1,6 +1,9 @@
 // lib/features/recipe/data/datasources/firestore_recipe_data_source.dart
 // Data Layer DataSource: 파이어베이스 Firestore와 직접 통신
 
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore SDK 사용
 import '../models/recipe_model.dart'; // RecipeModel 임포트
 
@@ -119,13 +122,28 @@ class FirestoreRecipeDataSource { // 인터페이스 없이 바로 구현 시
       final recipeMap = recipe.toJson();
 
       // Firestore에 문서 추가 (ID 자동 생성)
-      final docRef = await _recipesCollection.add(recipeMap);
+      // final docRef = await _recipesCollection.add(recipeMap);
+      final docRef = await _recipesCollection
+          .add(recipeMap)
+          .timeout(Duration(seconds: 5))
+          .catchError((e) {
+        print('🔥 catchError fired: $e');
+        throw e;
+      });
+      print('FirestoreRecipeDataSource: Firestore add finished. Doc ID: ${docRef.id}'); // <-- Firestore 호출 완료 로그
 
       // 새로 생성된 문서의 ID 반환
       return docRef.id;
-    } catch (e) {
-      print('Error adding recipe to Firestore: $e');
-      rethrow;
+    } on FirebaseException catch (e) {
+      print('FirestoreRecipeDataSource: FirebaseException in addRecipe: ${e.code} - ${e.message}'); // <-- Firebase 에러 로그
+      rethrow; // 에러 다시 던짐
+    } on TimeoutException catch (e) {
+      print('FirestoreRecipeDataSource: TimeoutException in addRecipe: $e');
+      throw Exception('Firestore 저장 요청 시간 초과'); // 사용자에게 보여줄 에러 메시지로 변환
+    } catch (e, s) {
+      print('FirestoreRecipeDataSource: Generic error in addRecipe: $e'); // <-- 기타 에러 로그
+      print('❌ Caught error: $e\nStack: $s');
+      rethrow; // 에러 다시 던짐
     }
   }
 

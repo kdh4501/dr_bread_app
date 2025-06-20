@@ -9,6 +9,8 @@ abstract class AuthRepository {
 
   // Google 로그인 실행
   Future<UserEntity?> signInWithGoogle();
+  // 현재 로그인된 사용자 정보를 가져오는 메서드
+  Future<UserEntity?> getCurrentUser();
 
   // 로그아웃 실행
   Future<void> signOut();
