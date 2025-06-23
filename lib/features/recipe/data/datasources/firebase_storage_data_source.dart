@@ -48,16 +48,19 @@ class FirebaseStorageDataSource {
     }
   }
 
-// TODO: 필요에 따라 이미지 삭제 등 추가적인 메서드 구현
-// Future<void> deleteImage(String imageUrl) async {
-//   try {
-//     // URL로부터 Storage 참조 가져오기
-//     final ref = _storage.refFromURL(imageUrl);
-//     // 파일 삭제
-//     await ref.delete();
-//   } catch (e) {
-//     print('Firebase Storage delete error: $e');
-//     rethrow;
-//   }
-// }
+  // TODO: 필요에 따라 이미지 삭제 등 추가적인 메서드 구현
+  Future<void> deleteImage(String imageUrl) async {
+    try {
+      // URL로부터 Storage 참조 가져오기
+      final ref = _storage.refFromURL(imageUrl);
+      // 파일 삭제
+      await ref.delete();
+    } on FirebaseException catch (e) {
+      debugPrint('Firebase Storage delete error: ${e.code} - ${e.message}');
+      rethrow; // 에러 다시 던짐
+    } catch (e) {
+      debugPrint('Firebase Storage delete error: $e');
+      rethrow;
+    }
+  }
 }
