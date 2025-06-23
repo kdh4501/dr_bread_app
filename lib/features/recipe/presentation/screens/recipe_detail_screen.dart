@@ -94,15 +94,36 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
     if (confirmed == true && _recipe != null) { // 사용자가 확인을 누르고 레시피 데이터가 있을 때
       setState(() { _isLoading = true; }); // 로딩 시작 (삭제 로딩)
       try {
-        await _deleteRecipeUseCase(_recipe!.uid); // UseCase 실행 (ID 전달)
+        await _deleteRecipeUseCase(_recipe!.uid, imageUrl: _recipe!.photoUrl); // UseCase 실행 (ID 전달)
         // TODO: 삭제 성공 후 처리 (예: 이전 화면인 목록 화면으로 돌아가기)
-        Navigator.pop(context); // 상세 화면 닫고 목록 화면으로 복귀
+        Navigator.pop(context, true); // 상세 화면 닫고 목록 화면으로 복귀
         // TODO: SnackBar 등으로 사용자에게 삭제 완료 알림 (옵션)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('레시피가 삭제되었습니다.'),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            duration: const Duration(seconds: 2),
+          )
+        );
 
       } catch (e) {
         // TODO: 삭제 실패 시 에러 처리 (에러 메시지 보여주기 등)
         setState(() { _errorMessage = '레시피 삭제에 실패했습니다: $e'; });
-        print('레시피 삭제 중 에러 발생: $e');
+        debugPrint('레시피 삭제 중 에러 발생: $e');
+        // 에러 다이얼로그 
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('레시피 삭제 실패'),
+              content: Text('레시피 삭제 중 오류가 발생했습니다: ${e.toString()}'),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('확인'),
+                ),
+              ],
+            ),
+        );
       } finally {
         setState(() { _isLoading = false; }); // 로딩 종료
       }
