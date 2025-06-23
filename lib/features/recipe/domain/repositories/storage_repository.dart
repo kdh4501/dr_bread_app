@@ -14,6 +14,6 @@ abstract class StorageRepository {
   // String path: 저장소에 저장될 경로 (예: 'recipe_images/...')
   Future<String> uploadImage(File imageFile, String path);
 
-// TODO: 필요에 따라 이미지 삭제 등 추가적인 저장소 작업 메서드 정의
-// Future<void> deleteImage(String imageUrl);
+  // TODO: 필요에 따라 이미지 삭제 등 추가적인 저장소 작업 메서드 정의
+  Future<void> deleteImage(String imageUrl);
 }
