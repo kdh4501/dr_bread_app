@@ -34,14 +34,14 @@ class StorageRepositoryImpl implements StorageRepository {
     }
   }
 
-// TODO: 필요에 따라 deleteImage() 메서드 구현
-// @override
-// Future<void> deleteImage(String imageUrl) async {
-//   try {
-//     await dataSource.deleteImage(imageUrl);
-//   } catch (e) {
-//     print('Error in StorageRepositoryImpl.deleteImage: $e');
-//     rethrow;
-//   }
-// }
+  // TODO: 필요에 따라 deleteImage() 메서드 구현
+  @override
+  Future<void> deleteImage(String imageUrl) async {
+    try {
+      await dataSource.deleteImage(imageUrl);
+    } catch (e) {
+      debugPrint('Error in StorageRepositoryImpl.deleteImage: $e');
+      rethrow;
+    }
+  }
 }
