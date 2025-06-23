@@ -119,7 +119,7 @@ Future<void> setupDependencies() async {
   getIt.registerLazySingleton<UpdateRecipeUseCase>(
           () => UpdateRecipeUseCase(getIt<RecipeRepository>()));
   getIt.registerLazySingleton<DeleteRecipeUseCase>(
-          () => DeleteRecipeUseCase(getIt<RecipeRepository>()));
+          () => DeleteRecipeUseCase(getIt<RecipeRepository>(), getIt<StorageRepository>()));
   // 이미지 업로드 UseCase 등록
   getIt.registerLazySingleton<UploadImageUseCase>( // TODO: UploadImageUseCase 구현 필요
           () => UploadImageUseCase(getIt<StorageRepository>())); // 의존성 주입 // TODO: StorageRepository 인터페이스 구현 필요
