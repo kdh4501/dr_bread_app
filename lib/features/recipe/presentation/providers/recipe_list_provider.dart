@@ -70,12 +70,12 @@ class RecipeListProvider with ChangeNotifier { // ChangeNotifier 상속 (with �
           _recipes = []; // 에러 발생 시 목록 비우기 (선택 사항)
           _isLoading = false; // 로딩 종료
           notifyListeners(); // 상태 변경 알림
-          print('레시피 스트림 에러 발생: $error');
+          debugPrint('레시피 스트림 에러 발생: $error');
         },
         onDone: () { // 스트림 종료 시 이 블록 실행 (Firestore 스트림은 보통 종료되지 않음)
           _isLoading = false; // 로딩 종료
           notifyListeners();
-          print('레시피 스트림 종료');
+          debugPrint('레시피 스트림 종료');
         },
         cancelOnError: true, // 에러 발생 시 자동으로 구독 취소
       );
@@ -84,7 +84,7 @@ class RecipeListProvider with ChangeNotifier { // ChangeNotifier 상속 (with �
       // 에러 발생 시
       _errorMessage = '레시피를 불러오는데 실패했습니다: $e'; // 에러 메시지 설정
       _recipes = []; // 에러 발생 시 목록 비우기 (선택 사항)
-      print('레시피 로딩 중 에러 발생: $e'); // 디버깅용 로그
+      debugPrint('레시피 로딩 중 에러 발생: $e'); // 디버깅용 로그
     } finally {
       _isLoading = false; // 로딩 종료
       notifyListeners(); // 상태 변경 알림 (로딩 종료, 목록/에러 메시지 업데이트)
@@ -123,7 +123,7 @@ class RecipeListProvider with ChangeNotifier { // ChangeNotifier 상속 (with �
       // 에러 발생 시
       _errorMessage = '레시피 검색에 실패했습니다: $e'; // 에러 메시지 설정
       _recipes = []; // 에러 발생 시 목록 비우기 (선택 사항)
-      print('레시피 검색 중 에러 발생: $e'); // 디버깅용 로그
+      debugPrint('레시피 검색 중 에러 발생: $e'); // 디버깅용 로그
     } finally {
       _isLoading = false; // 로딩 종료
       notifyListeners(); // 상태 변경 알림 (로딩 종료, 목록/에러 메시지 업데이트)

@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import '../../domain/entities/user.dart'; // Domain Entity
 import '../../domain/repositories/auth_repository.dart'; // Domain Repository Interface
 import '../datasources/firebase_auth_data_source.dart'; // Data Source
@@ -46,7 +47,7 @@ class AuthRepositoryImpl implements AuthRepository {
       );
     } catch (e) {
       // 데이터 소스 에러를 Domain Layer 또는 Presentation Layer에서 처리할 수 있도록 던지거나 변환
-      print('Error in AuthRepositoryImpl.signInWithGoogle: $e');
+      debugPrint('Error in AuthRepositoryImpl.signInWithGoogle: $e');
       throw e; // 또는 커스텀 에러 타입으로 변환하여 던짐
     }
   }

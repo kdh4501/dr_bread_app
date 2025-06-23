@@ -3,6 +3,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore 관련 에러 처리를 위해 필요할 수 있음
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import '../../domain/entities/recipe.dart'; // Domain Entity 임포트
 import '../../domain/repositories/recipe_repository.dart'; // Domain Repository Interface 임포트
 import '../datasources/firestore_recipe_data_source.dart'; // FirestoreDataSource 임포트
@@ -43,7 +44,7 @@ class RecipeRepositoryImpl implements RecipeRepository {
       // 예: FirestoreException 발생 시
       if (e is FirebaseException) {
         // Firebase 관련 에러 처리 또는 로깅
-        print('FirestoreException in getRecipeDetail: ${e.message}');
+        debugPrint('FirestoreException in getRecipeDetail: ${e.message}');
         // throw CustomAppException('데이터 조회 중 오류 발생'); // 커스텀 에러로 변환하여 던지기
       }
       // 다른 종류의 에러는 그대로 던지거나 처리
@@ -70,17 +71,17 @@ class RecipeRepositoryImpl implements RecipeRepository {
   // Future<String> (새로 생성된 UID) 반환
   @override
   Future<String> addRecipe(RecipeEntity recipe) async {
-    print('RecipeRepositoryImpl.addRecipe called.');
+    debugPrint('RecipeRepositoryImpl.addRecipe called.');
     try {
       // Domain Layer의 RecipeEntity를 Data Layer의 RecipeModel로 변환 (저장하기 위해)
       final recipeModel = RecipeModel.fromEntity(recipe); // TODO: Model에 fromEntity 팩토리 추가 필요
-      print('RecipeRepositoryImpl: Entity converted to Model.');
+      debugPrint('RecipeRepositoryImpl: Entity converted to Model.');
 
-      print('RecipeRepositoryImpl: Calling dataSource.addRecipe...'); // <-- DataSource 호출 전 로그
+      debugPrint('RecipeRepositoryImpl: Calling dataSource.addRecipe...'); // <-- DataSource 호출 전 로그
       // DataSource에게 데이터 추가 요청 위임
       // DataSource는 Firestore에 저장하고 생성된 UID를 반환
       final newRecipeId = await dataSource.addRecipe(recipeModel); // <-- 여기서 에러 발생 가능성
-      print('RecipeRepositoryImpl: dataSource.addRecipe finished. New ID: $newRecipeId'); // <-- DataSource 호출 완료 로그
+      debugPrint('RecipeRepositoryImpl: dataSource.addRecipe finished. New ID: $newRecipeId'); // <-- DataSource 호출 완료 로그
       return newRecipeId;
     } catch (e) {
       // 데이터 추가 중 발생한 에러 처리

@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore SDK 사용
+import 'package:flutter/cupertino.dart';
 import '../models/recipe_model.dart'; // RecipeModel 임포트
 
 // Firestore 데이터 소스 인터페이스 (선택 사항, 개인 프로젝트에서는 구현체만 만들어도 됨)
@@ -62,7 +63,7 @@ class FirestoreRecipeDataSource { // 인터페이스 없이 바로 구현 시
       }
     } catch (e) {
       // Firestore 통신 중 발생한 에러 처리
-      print('Error fetching recipe from Firestore: $e');
+      debugPrint('Error fetching recipe from Firestore: $e');
       // 에러를 다시 던져서 Repository나 UseCase에서 처리하도록 함
       rethrow;
     }
@@ -108,7 +109,7 @@ class FirestoreRecipeDataSource { // 인터페이스 없이 바로 구현 시
       */
 
     } catch (e) {
-      print('Error searching recipes in Firestore: $e');
+      debugPrint('Error searching recipes in Firestore: $e');
       rethrow;
     }
   }
@@ -126,19 +127,19 @@ class FirestoreRecipeDataSource { // 인터페이스 없이 바로 구현 시
       final docRef = await _recipesCollection
           .add(recipeMap)
           .timeout(Duration(seconds: 5));
-      print('FirestoreRecipeDataSource: Firestore add finished. Doc ID: ${docRef.id}'); // <-- Firestore 호출 완료 로그
+      debugPrint('FirestoreRecipeDataSource: Firestore add finished. Doc ID: ${docRef.id}'); // <-- Firestore 호출 완료 로그
 
       // 새로 생성된 문서의 ID 반환
       return docRef.id;
     } on FirebaseException catch (e) {
-      print('FirestoreRecipeDataSource: FirebaseException in addRecipe: ${e.code} - ${e.message}'); // <-- Firebase 에러 로그
+      debugPrint('FirestoreRecipeDataSource: FirebaseException in addRecipe: ${e.code} - ${e.message}'); // <-- Firebase 에러 로그
       rethrow; // 에러 다시 던짐
     } on TimeoutException catch (e) {
-      print('FirestoreRecipeDataSource: TimeoutException in addRecipe: $e');
+      debugPrint('FirestoreRecipeDataSource: TimeoutException in addRecipe: $e');
       throw Exception('Firestore 저장 요청 시간 초과'); // 사용자에게 보여줄 에러 메시지로 변환
     } catch (e, s) {
-      print('FirestoreRecipeDataSource: Generic error in addRecipe: $e'); // <-- 기타 에러 로그
-      print('❌ Caught error: $e\nStack: $s');
+      debugPrint('FirestoreRecipeDataSource: Generic error in addRecipe: $e'); // <-- 기타 에러 로그
+      debugPrint('❌ Caught error: $e\nStack: $s');
       rethrow; // 에러 다시 던짐
     }
   }
@@ -153,7 +154,7 @@ class FirestoreRecipeDataSource { // 인터페이스 없이 바로 구현 시
       // 특정 ID의 문서 업데이트
       await _recipesCollection.doc(recipe.id).update(recipeMap);
     } catch (e) {
-      print('Error updating recipe in Firestore: $e');
+      debugPrint('Error updating recipe in Firestore: $e');
       rethrow;
     }
   }
@@ -165,7 +166,7 @@ class FirestoreRecipeDataSource { // 인터페이스 없이 바로 구현 시
       // 특정 ID의 문서 삭제
       await _recipesCollection.doc(uid).delete();
     } catch (e) {
-      print('Error deleting recipe from Firestore: $e');
+      debugPrint('Error deleting recipe from Firestore: $e');
       rethrow;
     }
   }

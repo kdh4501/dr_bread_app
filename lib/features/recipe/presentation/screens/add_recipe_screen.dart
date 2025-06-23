@@ -250,7 +250,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
             ],
           ),
         );
-        print('레시피 저장/업데이트 중 에러 발생: $e');
+        debugPrint('레시피 저장/업데이트 중 에러 발생: $e');
       }
       // 로딩 종료는 에러 발생 시 또는 성공 후 pop 될 때 setState를 통해 자연스럽게 처리될 수 있음
     }

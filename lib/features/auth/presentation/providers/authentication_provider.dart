@@ -44,21 +44,21 @@ class AuthenticationProvider extends ChangeNotifier { // 또는 Riverpod의 Stat
         _currentUser = null; // 에러 발생 시 사용자 정보 비움
         // _isLoading = false; // 로딩 종료
         notifyListeners();
-        print('인증 상태 스트림 에러 발생: $error');
+        debugPrint('인증 상태 스트림 에러 발생: $error');
       },
       onDone: () {
         // _isLoading = false;
         notifyListeners();
-        print('인증 상태 스트림 종료');
+        debugPrint('인증 상태 스트림 종료');
       },
       cancelOnError: true,
     );
-    print('AuthProvider initialized and authStateChanges stream subscribed.');
+    debugPrint('AuthProvider initialized and authStateChanges stream subscribed.');
   }
 
   // Google 로그인 실행
   Future<void> signInWithGoogle() async {
-    print('AuthenticationProvider signInWithGoogle called!');
+    debugPrint('AuthenticationProvider signInWithGoogle called!');
     _isLoading = true;
     _errorMessage = null;
     notifyListeners(); // 로딩 시작 알림
@@ -70,7 +70,7 @@ class AuthenticationProvider extends ChangeNotifier { // 또는 Riverpod의 Stat
       _errorMessage = null; // 성공 시 에러 없음
     } catch (e) {
       // UseCase 실행 중 발생한 에러 처리
-      print('Error during Google Sign-In or Firebase Auth: $e');
+      debugPrint('Error during Google Sign-In or Firebase Auth: $e');
       _errorMessage = '로그인 중 오류 발생: ${e.toString()}';
       _currentUser = null; // 에러 발생 시 사용자 정보 초기화
     } finally {
@@ -92,7 +92,7 @@ class AuthenticationProvider extends ChangeNotifier { // 또는 Riverpod의 Stat
       _errorMessage = null; // 성공 시 에러 없음
     } catch (e) {
       // TODO: 에러 처리
-      print('로그아웃 실패: $e');
+      debugPrint('로그아웃 실패: $e');
       _errorMessage = '로그아웃 실패: ${e.toString()}';
     } finally {
       _isLoading = false;
@@ -103,7 +103,7 @@ class AuthenticationProvider extends ChangeNotifier { // 또는 Riverpod의 Stat
   // Provider가 더 이상 필요 없어질 때 호출되어 자원 정리
   @override
   void dispose() {
-    print('AuthProvider disposed. Cancelling authStateSubscription.');
+    debugPrint('AuthProvider disposed. Cancelling authStateSubscription.');
     _authStateSubscription?.cancel(); // 인증 상태 스트림 구독 취소
     // TODO: 다른 StreamSubscription이나 컨트롤러 등 해제
 

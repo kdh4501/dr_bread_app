@@ -47,7 +47,7 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
             onPressed: () {
               // TODO: 검색 기능 구현 (검색 바 노출 또는 검색 화면 이동)
               // 검색 바를 앱바 아래에 토글하거나, Navigator.push 등으로 검색 전용 화면으로 이동
-              print('검색 아이콘 클릭');
+              debugPrint('검색 아이콘 클릭');
             },
           ),
           // 필터 아이콘 버튼
@@ -55,7 +55,7 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
             icon: const Icon(Icons.filter_list),
             onPressed: () {
               // TODO: 필터링 기능 구현 (다이얼로그 또는 화면 노출)
-              print('필터 아이콘 클릭');
+              debugPrint('필터 아이콘 클릭');
             },
           ),
           // TODO: 로그아웃 버튼 (옵션)

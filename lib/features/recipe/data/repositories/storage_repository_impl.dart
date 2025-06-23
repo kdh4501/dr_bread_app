@@ -1,6 +1,8 @@
 // lib/features/recipe/data/repositories/storage_repository_impl.dart
 // Data Layer Repository 구현체: Domain Layer StorageRepository 인터페이스를 implements
 
+import 'package:flutter/cupertino.dart';
+
 import '../../domain/repositories/storage_repository.dart'; // Domain Repository Interface 임포트
 import '../datasources/firebase_storage_data_source.dart'; // FirebaseStorageDataSource 임포트
 import 'dart:io'; // File 클래스 사용
@@ -27,7 +29,7 @@ class StorageRepositoryImpl implements StorageRepository {
 
     } catch (e) {
       // DataSource에서 발생한 에러를 여기서 잡거나 다시 던질 수 있음
-      print('Error in StorageRepositoryImpl.uploadImage: $e');
+      debugPrint('Error in StorageRepositoryImpl.uploadImage: $e');
       rethrow; // 잡은 에러를 다시 던짐
     }
   }

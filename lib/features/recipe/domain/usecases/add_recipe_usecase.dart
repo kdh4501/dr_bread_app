@@ -2,6 +2,7 @@
 // Domain Layer UseCase: 새로운 레시피 추가 비즈니스 로직
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 
 import '../../../../main.dart';
 import '../../../auth/domain/repositories/auth_repository.dart';
@@ -45,7 +46,7 @@ class AddRecipeUseCase {
     // Repository는 Data Layer에 구현되어 Firestore에 저장하는 역할을 함
     // Repository에게 메타데이터가 추가된 RecipeEntity 객체 전달
     final newRecipeId = await repository.addRecipe(recipeWithMetadata); // <-- Repository의 addRecipe 메서드 호출
-    print('AddRecipeUseCase: repository.addRecipe finished. New ID: $newRecipeId'); // Repository 호출 완료 로그
+    debugPrint('AddRecipeUseCase: repository.addRecipe finished. New ID: $newRecipeId'); // Repository 호출 완료 로그
     // Repository에게 데이터 추가 요청 위임
     // Repository는 Data Layer에 구현되어 Firestore에 저장하는 역할을 함
     return newRecipeId; // Repository의 addRecipe 메서드 호출

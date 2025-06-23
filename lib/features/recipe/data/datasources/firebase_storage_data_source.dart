@@ -2,7 +2,9 @@
 // Data Layer DataSource: 파이어베이스 Storage와 직접 통신
 
 import 'package:firebase_storage/firebase_storage.dart'; // Firebase Storage SDK 사용
-import 'dart:io'; // File 클래스 사용
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart'; // File 클래스 사용
 
 // Firebase Storage 데이터 소스 구현체
 class FirebaseStorageDataSource {
@@ -36,12 +38,12 @@ class FirebaseStorageDataSource {
 
     } on FirebaseException catch (e) {
       // Firebase Storage 관련 에러 처리
-      print('Firebase Storage upload error: ${e.code} - ${e.message}');
+      debugPrint('Firebase Storage upload error: ${e.code} - ${e.message}');
       // 에러를 다시 던져서 Repository나 UseCase에서 처리하도록 함
       rethrow;
     } catch (e) {
       // 기타 에러 처리
-      print('Storage upload error: $e');
+      debugPrint('Storage upload error: $e');
       rethrow;
     }
   }

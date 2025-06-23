@@ -62,7 +62,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
       setState(() {
         _errorMessage = '레시피 상세 정보를 불러오는데 실패했습니다: $e'; // 에러 메시지
       });
-      print('레시피 상세 로딩 중 에러 발생: $e');
+      debugPrint('레시피 상세 로딩 중 에러 발생: $e');
     } finally {
       setState(() {
         _isLoading = false; // 로딩 종료
