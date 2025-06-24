@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
@@ -15,6 +16,7 @@ import 'features/auth/data/repositories/auth_repository_impl.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
 import 'features/auth/domain/usecases/sign_in_with_google_usecase.dart';
 import 'features/auth/domain/usecases/sign_out_usecase.dart';
+import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/providers/authentication_provider.dart';
 import 'features/auth/presentation/screens/auth_wrapper.dart';
 import 'features/recipe/data/datasources/firebase_storage_data_source.dart';
@@ -58,9 +60,17 @@ void main() async {
     MultiProvider(
       providers: [
         // AuthProvider 설정: UseCase 주입
-        ChangeNotifierProvider<AuthenticationProvider>(
-          create: (_) => AuthenticationProvider(getIt<SignInWithGoogleUseCase>(), getIt<SignOutUseCase>()),
-          // lazy: false, // 앱 시작 시 바로 AuthProvider 생성 (선택 사항)
+        // ChangeNotifierProvider<AuthenticationProvider>(
+        //   create: (_) => AuthenticationProvider(getIt<SignInWithGoogleUseCase>(), getIt<SignOutUseCase>()),
+        //   // lazy: false, // 앱 시작 시 바로 AuthProvider 생성 (선택 사항)
+        // ),
+        // AuthProvider 대신 AuthBloc을 BlocProvider로 등록
+        BlocProvider<AuthBloc>(
+          create: (_) => AuthBloc(
+            getIt<SignInWithGoogleUseCase>(),
+            getIt<SignOutUseCase>(),
+            getIt<AuthRepository>(), // AuthRepository 주입
+          ),
         ),
         ChangeNotifierProvider<RecipeListProvider>( // <-- 추가!
           create: (_) => RecipeListProvider(getIt<GetRecipesUseCase>(), getIt<SearchRecipesUseCase>()), // <-- UseCase 주입!
