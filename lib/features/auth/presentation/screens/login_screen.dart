@@ -37,7 +37,7 @@ class LoginScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 16, color: Colors.grey[700]),
               ),
               SizedBox(height: 40),
-              BlocListener<AuthBloc, AuthState>(
+              BlocConsumer<AuthBloc, AuthState>(
                 listener: (context, state) {
                   if (state is AuthError) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -48,22 +48,17 @@ class LoginScreen extends StatelessWidget {
                     );
                   }
                 },
-                child: BlocBuilder<AuthBloc, AuthState>(
-                  builder: (context, state) {
-                    // 로딩 중이면 로딩 스피너 표시
-                    if (state is AuthLoading) {
-                      return const CircularProgressIndicator();
-                    }
-                    // 로딩 중이 아니면 Google 로그인 버튼 표시
-                    return GoogleSignInButton(
-                      onPressed: () {
-                        // Bloc에 이벤트 추가
-                        authBloc.add(AuthSignInWithGoogle()); // <-- 이벤트 추가!
-                      },
-                    );
-                  },
-                ),
-              ),
+                builder: (context, state) {
+                  if (state is AuthLoading) {
+                    return CircularProgressIndicator(color: Theme.of(context).colorScheme.primary);
+                  }
+                  return GoogleSignInButton(
+                    onPressed: () {
+                      context.read<AuthBloc>().add(AuthSignInWithGoogle());
+                    },
+                  );
+                },
+              )
               // TODO: 이메일/비밀번호 로그인 UI 추가 가능
             ],
           ),
