@@ -10,7 +10,6 @@ Domain Layer의 AuthRepository 인터페이스를 구현하고 DataSource를 사
  */
 class AuthRepositoryImpl implements AuthRepository {
   final AuthDataSource dataSource; // DataSource에 의존
-
   AuthRepositoryImpl(this.dataSource);
 
   @override
