@@ -1,7 +1,11 @@
+import 'package:dr_bread_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:dr_bread_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:dr_bread_app/features/auth/presentation/providers/authentication_provider.dart';
 import 'package:dr_bread_app/features/auth/presentation/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import '../bloc/auth_event.dart';
 import 'login_screen.dart'; // 로그인 화면
 import '../../../recipe/presentation/screens/main_recipe_list_screen.dart'; // TODO: 스플래시 스크린 임포트
 
@@ -10,22 +14,41 @@ class AuthWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthenticationProvider>(context);
-
-    // AuthProvider의 로딩 상태나 초기화 상태를 보고 스플래시/로딩 화면 표시 결정
-    // Provider가 초기화되고 인증 상태를 확인하는 동안 로딩 상태일 수 있음
-    // TODO: 실제 스플래시 스크린 로직과 연동 필요
-    if (authProvider.isLoading) { // 예시 로딩 체크 (실제 스플래시 로직과 다를 수 있음)
-      return const SplashScreen(); // 로딩 중이면 스플래시 스크린 보여줌
-    }
-
-
-    // 사용자가 로그인 되어 있으면 (currentUser != null) 메인 화면 보여줌
-    if (authProvider.currentUser != null) {
-      return const MainRecipeListScreen();
-    } else {
-      // 사용자가 로그인 되어 있지 않으면 로그인 화면 보여줌
-      return const LoginScreen();
-    }
+    // BlocBuilder를 사용하여 AuthBloc의 상태 변화를 구독
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        if (state is AuthLoading) {
+          return const SplashScreen();
+        }  else if (state is AuthAuthenticated) {
+          // 인증 성공 상태
+          return const MainRecipeListScreen();
+        } else if (state is AuthUnauthenticated) {
+          // 인증되지 않은 상태 (로그인 화면)
+          return const LoginScreen();
+        } else if (state is AuthError) {
+          // 에러 상태 (에러 메시지 표시)
+          // TODO: 에러 메시지를 사용자에게 보여주는 UI 추가
+          return Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('오류 발생: ${state.message}'),
+                  ElevatedButton(
+                    onPressed: () {
+                      // 에러 발생 시 다시 로그인 화면으로 이동하거나 재시도 이벤트 추가
+                      context.read<AuthBloc>().add(AuthStarted()); // 다시 시작 이벤트
+                    },
+                    child: const Text('다시 시도'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+        // 초기 상태 또는 알 수 없는 상태 (기본값)
+        return const SplashScreen();
+      },
+    );
   }
 }
