@@ -109,7 +109,7 @@ Future<void> setupDependencies() async {
   getIt.registerSingleton<RecipeRepository>(
       RecipeRepositoryImpl(getIt<FirestoreRecipeDataSource>())); // 의존성 주입
   getIt.registerSingleton<StorageRepository>( // StorageRepository 구현체 등록
-      StorageRepositoryImpl(getIt<FirebaseStorageDataSource>())); // 의존성 주입 // TODO: StorageRepository, StorageRepositoryImpl 구현 필요
+      StorageRepositoryImpl(getIt<FirebaseStorageDataSource>())); // 의존성 주입
 
   // Domain Layer UseCase 등록 (LazySingleton)
   // UseCase는 필요할 때 생성되도록 LazySingleton으로 등록
