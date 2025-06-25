@@ -48,21 +48,21 @@ class LoginScreen extends StatelessWidget {
                     );
                   }
                 },
-              ),
-              BlocBuilder<AuthBloc, AuthState>(
-                builder: (context, state) {
-                  // 로딩 중이면 로딩 스피너 표시
-                  if (state is AuthLoading) {
-                    return const CircularProgressIndicator();
-                  }
-                  // 로딩 중이 아니면 Google 로그인 버튼 표시
-                  return GoogleSignInButton(
-                    onPressed: () {
-                      // Bloc에 이벤트 추가
-                      authBloc.add(AuthSignInWithGoogle()); // <-- 이벤트 추가!
-                    },
-                  );
-                },
+                child: BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                    // 로딩 중이면 로딩 스피너 표시
+                    if (state is AuthLoading) {
+                      return const CircularProgressIndicator();
+                    }
+                    // 로딩 중이 아니면 Google 로그인 버튼 표시
+                    return GoogleSignInButton(
+                      onPressed: () {
+                        // Bloc에 이벤트 추가
+                        authBloc.add(AuthSignInWithGoogle()); // <-- 이벤트 추가!
+                      },
+                    );
+                  },
+                ),
               ),
               // TODO: 이메일/비밀번호 로그인 UI 추가 가능
             ],
