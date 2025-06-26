@@ -252,10 +252,6 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               const Text('- (재료 목록 표시)'), // Placeholder
 
               const SizedBox(height: kSpacingLarge),
-
-              // 조리법 섹션
-              Text('조리법', style: textTheme.titleMedium),
-              const SizedBox(height: 8),
               // TODO: 조리법 단계별 목록 (List<String> steps; 이런 식으로 RecipeEntity에 있다면)
               // 조리법 섹션
               Text('조리법', style: textTheme.titleMedium), // 테마 스타일 활용
