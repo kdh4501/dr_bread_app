@@ -54,8 +54,8 @@ class RecipeActionBloc extends Bloc<RecipeActionEvent, RecipeActionState> {
         updatedAt: DateTime.now(), // 업데이트 시간 추가
       );
 
-      _addRecipeUseCase(recipeToSave); // UseCase 실행
-      emit(RecipeActionSuccess(message: '레시피가 추가되었습니다!')); // 성공 상태 발행
+      final newRecipeId = await _addRecipeUseCase(recipeToSave); // UseCase 실행
+      emit(RecipeActionSuccess(message: '레시피가 추가되었습니다!', id: newRecipeId)); // 성공 상태 발행
     } catch (e) {
       emit(RecipeActionFailure('레시피 추가 실패: ${e.toString()}')); // 실패 상태 발행
     }
