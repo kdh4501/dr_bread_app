@@ -30,6 +30,7 @@ import 'features/recipe/domain/usecases/get_recipes_usecase.dart';
 import 'features/recipe/domain/usecases/search_recipes_usecase.dart';
 import 'features/recipe/domain/usecases/update_recipe_usecase.dart';
 import 'features/recipe/domain/usecases/upload_image_usecase.dart';
+import 'features/recipe/presentation/bloc/recipe_action_bloc.dart';
 import 'features/recipe/presentation/providers/recipe_list_provider.dart';
 import 'firebase_options.dart';
 
@@ -81,6 +82,14 @@ void main() async {
         // ChangeNotifierProvider<RecipeListProvider>(
         //   create: (_) => RecipeListProvider(...),
         // ),
+        BlocProvider<RecipeActionBloc>(
+          create: (_) => RecipeActionBloc(
+            getIt<AddRecipeUseCase>(),
+            getIt<UpdateRecipeUseCase>(),
+            getIt<DeleteRecipeUseCase>(),
+            getIt<UploadImageUseCase>(),
+          ),
+        ),
       ],
       child: const MyApp(), // 하위 위젯들이 Provider에 접근 가능
     ),
