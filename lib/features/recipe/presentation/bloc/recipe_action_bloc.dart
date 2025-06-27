@@ -66,26 +66,37 @@ class RecipeActionBloc extends Bloc<RecipeActionEvent, RecipeActionState> {
   Future<void> _onUpdateRecipeRequested(UpdateRecipeRequested event, Emitter<RecipeActionState> emit) async {
     emit(RecipeActionLoading()); // 로딩 상태 발행
     try {
-      String? imageUrl = event.recipe.photoUrl; // 기존 이미지 URL
+      String? finalImageUrl = event.currentImageUrl;
 
-      // 이미지 삭제 로직
-      if (event.deleteExistingImage && imageUrl != null && imageUrl.isNotEmpty) { // 기존 이미지 삭제 요청이 있고 URL이 있다면
-        await _uploadImageUseCase.repository.deleteImage(imageUrl); // StorageRepository의 deleteImage 호출
-        imageUrl = null; // 이미지 삭제했으니 URL 초기화
-        debugPrint('RecipeActionBloc: Existing image deleted from Storage.');
-      }
-
-      // 새 이미지 파일이 있다면 업로드
-      if (event.imageFile != null) {
+      if (event.imageFile != null) {  // 1. 새 이미지를 선택한 경우
         final imageFile = File(event.imageFile!.path);
         final String uploadPath = '$kRecipeImagesStoragePath/${getIt<FirebaseAuth>().currentUser!.uid}/${DateTime.now().millisecondsSinceEpoch}.jpg';
-        imageUrl = await _uploadImageUseCase(imageFile, uploadPath);
+        finalImageUrl = await _uploadImageUseCase(imageFile, uploadPath); // 새 이미지 업로드
+        debugPrint('RecipeActionBloc: New image uploaded. URL: $finalImageUrl');
+
+        // 기존 이미지가 있었다면 삭제 (새 이미지로 교체 시)
+        if (event.currentImageUrl != null && event.currentImageUrl!.isNotEmpty) {
+          try {
+            await _uploadImageUseCase.repository.deleteImage(event.currentImageUrl!);
+            debugPrint('RecipeActionBloc: Old image deleted from Storage: ${event.currentImageUrl}');
+          } catch (e) {
+            debugPrint('RecipeActionBloc: Failed to delete old image: $e'); // 삭제 실패는 경고만
+          }
+        } else if (event.deleteExistingImage) { // 2. 기존 이미지를 명시적으로 삭제 요청한 경우
+          if (event.currentImageUrl != null && event.currentImageUrl!.isNotEmpty) {
+            await _uploadImageUseCase.repository.deleteImage(event.currentImageUrl!);
+            debugPrint('RecipeActionBloc: Existing image explicitly deleted. URL: ${event.currentImageUrl}');
+          }
+          finalImageUrl = null; // 이미지 삭제했으니 URL은 null
+        }
+      } else {  // 3. 새 이미지도 없고, 삭제 요청도 없는 경우 (기존 이미지 유지)
+        finalImageUrl = event.currentImageUrl;  // 기존 이미지 URL 유지
+        debugPrint('RecipeActionBloc: No new image, no delete request. Keeping existing image. URL: $finalImageUrl');
       }
-      // TODO: 기존 이미지가 있었는데 새 이미지를 선택하지 않고 기존 이미지를 삭제한 경우 처리 (imageUrl = null)
 
       // RecipeEntity에 최종 이미지 URL 반영 및 업데이트 시간 추가
       final recipeToUpdate = event.recipe.copyWith(
-        photoUrl: imageUrl,
+        photoUrl: finalImageUrl,
         updatedAt: DateTime.now(), // 업데이트 시간 추가
       );
 

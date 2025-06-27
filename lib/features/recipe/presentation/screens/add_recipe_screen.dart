@@ -228,6 +228,8 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
             imageFile: _selectedImage,
           // 기존 이미지가 있었고, _selectedImage도 null이고, _initialImageUrl도 null이면 삭제 요청
             deleteExistingImage: (_recipe?.photoUrl != null && _selectedImage == null && _initialImageUrl == null),
+          // 기존 이미지 URL도 함께 전달하여 Bloc이 판단하도록 함
+          currentImageUrl: _recipe?.photoUrl, // <-- 추가! 현재 레시피의 이미지 URL
         ));
       } else {
         _recipeActionBloc.add(AddRecipeRequested(
