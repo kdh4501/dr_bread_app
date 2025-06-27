@@ -31,6 +31,7 @@ import 'features/recipe/domain/usecases/search_recipes_usecase.dart';
 import 'features/recipe/domain/usecases/update_recipe_usecase.dart';
 import 'features/recipe/domain/usecases/upload_image_usecase.dart';
 import 'features/recipe/presentation/bloc/recipe_action_bloc.dart';
+import 'features/recipe/presentation/bloc/recipe_detail_bloc.dart';
 import 'features/recipe/presentation/providers/recipe_list_provider.dart';
 import 'firebase_options.dart';
 
@@ -78,10 +79,6 @@ void main() async {
           create: (_) => RecipeListProvider(getIt<GetRecipesUseCase>(), getIt<SearchRecipesUseCase>()), // <-- UseCase 주입!
           // lazy: false, // 앱 시작 시 바로 RecipeListProvider 생성 (선택 사항)
         ),
-        // TODO: RecipeListProvider 등 레시피 관련 Provider 추가
-        // ChangeNotifierProvider<RecipeListProvider>(
-        //   create: (_) => RecipeListProvider(...),
-        // ),
         BlocProvider<RecipeActionBloc>(
           create: (_) => RecipeActionBloc(
             getIt<AddRecipeUseCase>(),
@@ -89,6 +86,9 @@ void main() async {
             getIt<DeleteRecipeUseCase>(),
             getIt<UploadImageUseCase>(),
           ),
+        ),
+        BlocProvider<RecipeDetailBloc>(
+          create: (_) => RecipeDetailBloc(getIt<GetRecipeDetailUseCase>()),
         ),
       ],
       child: const MyApp(), // 하위 위젯들이 Provider에 접근 가능
