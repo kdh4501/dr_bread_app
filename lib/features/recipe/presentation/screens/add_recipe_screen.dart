@@ -1,10 +1,12 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dr_bread_app/features/recipe/domain/usecases/get_recipes_usecase.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:provider/provider.dart'; // Provider 사용
 import '../../../../core/constants/app_contstants.dart';
 import '../../../../main.dart';
@@ -126,10 +128,42 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery); // 갤러리에서 선택
 
     if (pickedFile != null) {
-      setState(() {
-        _selectedImage = pickedFile; // 선택된 이미지 파일 상태 업데이트
-        _initialImageUrl = null; // 새 이미지를 선택했으니 기존 이미지 URL은 더 이상 사용 안 함
-      });
+      final croppedFile = await ImageCropper().cropImage(
+        sourcePath: pickedFile.path,
+        // Android UI 설정
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: '이미지 자르기',
+            toolbarColor: Theme.of(context).colorScheme.primary, // 테마 메인 색상
+            toolbarWidgetColor: Theme.of(context).colorScheme.onPrimary, // 테마 메인 색상 위 텍스트/아이콘 색상
+            initAspectRatio: CropAspectRatioPreset.ratio16x9, // 초기 자르기 비율
+            lockAspectRatio: false, // 비율 고정 여부 (false면 사용자가 자유롭게 조절 가능)
+            aspectRatioPresets: [
+              CropAspectRatioPreset.original,
+              CropAspectRatioPreset.square,
+            ],
+
+          ),
+          // iOS UI 설정
+          IOSUiSettings(
+            title: '이미지 자르기',
+            doneButtonTitle: '완료',
+            cancelButtonTitle: '취소',
+            aspectRatioLockEnabled: false, // 비율 고정 여부
+            aspectRatioPresets: [
+              CropAspectRatioPreset.original,
+              CropAspectRatioPreset.square,
+            ],
+          ),
+        ],
+      );
+
+      if (croppedFile != null) {
+        setState(() {
+          _selectedImage = XFile(croppedFile.path); // 선택된 이미지 파일 상태 업데이트
+          _initialImageUrl = null; // 새 이미지를 선택했으니 기존 이미지 URL은 더 이상 사용 안 함
+        });
+      }
     }
   }
 
