@@ -21,9 +21,11 @@ class AddRecipeRequested extends RecipeActionEvent { // 레시피 추가 요청 
 class UpdateRecipeRequested extends RecipeActionEvent { // 레시피 편집 요청 이벤트
   final RecipeEntity recipe;
   final XFile? imageFile; // 이미지 파일 (선택 사항)
-  const UpdateRecipeRequested({required this.recipe, this.imageFile});
+  final bool deleteExistingImage; // 기존 이미지 삭제 여부 플래그
+
+  const UpdateRecipeRequested({required this.recipe, this.imageFile, this.deleteExistingImage = false});
   @override
-  List<Object?> get props => [recipe, imageFile];
+  List<Object?> get props => [recipe, imageFile, deleteExistingImage];
 }
 
 class DeleteRecipeRequested extends RecipeActionEvent { // 레시피 삭제 요청 이벤트
