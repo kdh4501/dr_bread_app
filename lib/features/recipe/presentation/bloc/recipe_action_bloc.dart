@@ -1,5 +1,6 @@
 // lib/features/recipe/presentation/bloc/recipe_action_bloc.dart
 import 'package:bloc/bloc.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'dart:io'; // File 클래스 사용
 import 'package:firebase_auth/firebase_auth.dart'; // 사용자 UID 가져오기용
@@ -67,6 +68,13 @@ class RecipeActionBloc extends Bloc<RecipeActionEvent, RecipeActionState> {
     try {
       String? imageUrl = event.recipe.photoUrl; // 기존 이미지 URL
 
+      // 이미지 삭제 로직
+      if (event.deleteExistingImage && imageUrl != null && imageUrl.isNotEmpty) { // 기존 이미지 삭제 요청이 있고 URL이 있다면
+        await _uploadImageUseCase.repository.deleteImage(imageUrl); // StorageRepository의 deleteImage 호출
+        imageUrl = null; // 이미지 삭제했으니 URL 초기화
+        debugPrint('RecipeActionBloc: Existing image deleted from Storage.');
+      }
+
       // 새 이미지 파일이 있다면 업로드
       if (event.imageFile != null) {
         final imageFile = File(event.imageFile!.path);
@@ -84,6 +92,7 @@ class RecipeActionBloc extends Bloc<RecipeActionEvent, RecipeActionState> {
       await _updateRecipeUseCase(recipeToUpdate); // UseCase 실행
       emit(RecipeActionSuccess(message: '레시피가 수정되었습니다!')); // 성공 상태 발행
     } catch (e) {
+      debugPrint('RecipeActionBloc: Error updating recipe: $e');
       emit(RecipeActionFailure('레시피 수정 실패: ${e.toString()}')); // 실패 상태 발행
     }
   }
