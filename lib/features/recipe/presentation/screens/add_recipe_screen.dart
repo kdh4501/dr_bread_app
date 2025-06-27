@@ -189,9 +189,17 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
 
       // Bloc에 이벤트 추가
       if (isEditing) {
-        _recipeActionBloc.add(UpdateRecipeRequested(recipe: recipeToSave, imageFile: _selectedImage));
+        _recipeActionBloc.add(UpdateRecipeRequested(
+            recipe: recipeToSave,
+            imageFile: _selectedImage,
+          // 기존 이미지가 있었고, _selectedImage도 null이고, _initialImageUrl도 null이면 삭제 요청
+            deleteExistingImage: (_recipe?.photoUrl != null && _selectedImage == null && _initialImageUrl == null),
+        ));
       } else {
-        _recipeActionBloc.add(AddRecipeRequested(recipe: recipeToSave, imageFile: _selectedImage));
+        _recipeActionBloc.add(AddRecipeRequested(
+            recipe: recipeToSave,
+            imageFile: _selectedImage
+        ));
       }
     }
   }
