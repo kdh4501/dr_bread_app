@@ -259,40 +259,76 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                   // 레시피 사진 선택/미리보기
                   GestureDetector( // 이미지를 탭하면 선택
                     onTap: _pickImage,
-                    child: Card(
-                        child: Container(
-                          width: double.infinity,
-                          height: 200,
-                          child: _selectedImage != null // 새 이미지 선택 시 미리보기
-                              ? ClipRRect( // 이미지 자체도 모서리 둥글게 (Card 모서리 둥글기와 일치 또는 살짝 작게)
-                            borderRadius: BorderRadius.circular(kSpacingMedium - 1.0), // Card 테마 둥글기 값 가져와서 적용
-                            child: Image.file(File(_selectedImage!.path), fit: BoxFit.cover),
-                          )
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceVariant,
+                        border: Border.all(
+                          color: colorScheme.outline,
+                          width: 1.0,
+                        ),
+                        borderRadius: BorderRadius.circular(kSpacingMedium)
+                      ),
+                      child: Container(
+                        width: double.infinity,
+                        height: 200,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            _selectedImage != null // 새 이미지 선택 시 미리보기
+                                ? ClipRRect( // 이미지 자체도 모서리 둥글게 (Card 모서리 둥글기와 일치 또는 살짝 작게)
+                              borderRadius: BorderRadius.circular(kSpacingMedium - 1.0), // Card 테마 둥글기 값 가져와서 적용
+                              child: Image.file(File(_selectedImage!.path), fit: BoxFit.cover),
+                            )
 
-                          // 편집 모드일 때 기존 이미지 미리보기 (새 이미지 선택 안 했을 경우)
-                              : _initialImageUrl != null && _initialImageUrl!.isNotEmpty // 기존 이미지 URL이 있다면
-                              ? ClipRRect( // 이미지 자체도 모서리 둥글게
-                            borderRadius: BorderRadius.circular(kSpacingMedium - 1.0), // Card 테마 둥글기 값 가져와서 적용
-                            child: CachedNetworkImage( // 기존 이미지 미리보기
-                              imageUrl: _initialImageUrl!,
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                              errorWidget: (context, url, error) => const Icon(Icons.error_outline),
-                            ),
-                          )
-                              : Column( // 사진 없을 때 기본 UI
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.camera_alt, size: kIconSizeLarge, color: colorScheme.onSurfaceVariant),
-                              SizedBox(height: kSpacingSmall),
-                              Text(
-                                  '사진 추가',
-                                  style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant)
+                            // 편집 모드일 때 기존 이미지 미리보기 (새 이미지 선택 안 했을 경우)
+                                : _initialImageUrl != null && _initialImageUrl!.isNotEmpty // 기존 이미지 URL이 있다면
+                                ? ClipRRect( // 이미지 자체도 모서리 둥글게
+                              borderRadius: BorderRadius.circular(kSpacingMedium - 1.0), // Card 테마 둥글기 값 가져와서 적용
+                              child: CachedNetworkImage( // 기존 이미지 미리보기
+                                imageUrl: _initialImageUrl!,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                                errorWidget: (context, url, error) => const Icon(Icons.error_outline),
                               ),
-                            ],
-                          ),
-                        )
-                    ),
+                            )
+                                : Column( // 사진 없을 때 기본 UI
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.camera_alt, size: kIconSizeLarge, color: colorScheme.onSurfaceVariant),
+                                SizedBox(height: kSpacingSmall),
+                                Text(
+                                    '사진 추가',
+                                    style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant)
+                                ),
+                              ],
+                            ),
+                            // 이미지 삭제 버튼 추가
+                            if (isEditing && (_selectedImage != null || (_initialImageUrl != null && _initialImageUrl!.isNotEmpty))) // 편집 모드이고 이미지가 있을 때만 표시
+                              Positioned( // Stack 내에서 위치 지정
+                                top: kSpacingSmall, // 상단 여백
+                                right: kSpacingSmall, // 우측 여백
+                                child: IconButton(
+                                  icon: Icon(Icons.cancel, color: colorScheme.error, size: kIconSizeMedium), // 삭제 아이콘
+                                  onPressed: () {
+                                    setState(() {
+                                      _selectedImage = null; // 새로 선택된 이미지 제거
+                                      _initialImageUrl = null; // 기존 이미지 URL 제거
+                                    });
+                                    // TODO: 사용자에게 이미지 삭제됨을 알리는 스낵바 등 피드백
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('이미지가 삭제되었습니다.'),
+                                        backgroundColor: colorScheme.primary,
+                                        duration: const Duration(seconds: 1),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    )
                   ),
                   const SizedBox(height: kSpacingMedium),
 
