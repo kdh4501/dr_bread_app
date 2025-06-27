@@ -54,9 +54,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
 
   // 선택된 이미지 파일 상태
   XFile? _selectedImage; // image_picker 패키지 사용
-
-  // 로딩 상태 (저장/업데이트 중)
-  bool _isLoading = false;
+  String? _initialImageUrl; // 편집 모드일 때 기존 이미지 URL
 
   // Bloc 인스턴스 가져오기
   late final RecipeActionBloc _recipeActionBloc;
@@ -69,7 +67,6 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
   @override
   void initState() {
     super.initState();
-
     _recipeActionBloc = context.read<RecipeActionBloc>(); // Bloc 인스턴스 가져오기
 
     // 컨트롤러 초기화
@@ -79,22 +76,31 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
     // 편집 모드인 경우 기존 데이터로 필드 초기화
     if (isEditing) {
       _recipe = widget.recipeToEdit;
+      _initialImageUrl = _recipe!.photoUrl;
+
       _titleController.text = _recipe!.title;
-      if(_recipe!.ingredients != null) {
+
+      // 재료 목록 채우기
+      if(_recipe!.ingredients != null && _recipe!.ingredients!.isNotEmpty) {
         for (var ing in _recipe!.ingredients!) {
           _ingredientControllers.add(TextEditingController(text: ing));
         }
+      } else {
+        _ingredientControllers.add(TextEditingController());
       }
-      if (_recipe!.steps != null) {
+
+      // 조리법 단계 채우기
+      if (_recipe!.steps != null && _recipe!.steps!.isNotEmpty) {
         for (var step in _recipe!.steps!) {
           _stepControllers.add(TextEditingController(text: step));
         }
+      } else {
+        _stepControllers.add(TextEditingController());
       }
       // TODO: 기존 이미지 URL 처리 (_selectedImage 대신 photoUrl 사용)
       // _selectedImage = null; // 편집 모드에서는 기존 이미지는 _recipe.photoUrl로 관리
     } else {
       // 추가 모드인 경우 기본 입력 필드 추가 (예: 재료 1개, 조리법 1단계)
-      _titleController = TextEditingController();
       _ingredientControllers.add(TextEditingController());
       _stepControllers.add(TextEditingController());
     }
@@ -104,7 +110,6 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
   @override
   void dispose() {
     _titleController.dispose();
-    // TODO: 다른 컨트롤러 해제
     // 동적 목록 컨트롤러들도 모두 해제
     for (var controller in _ingredientControllers) {
       controller.dispose();
@@ -123,6 +128,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
     if (pickedFile != null) {
       setState(() {
         _selectedImage = pickedFile; // 선택된 이미지 파일 상태 업데이트
+        _initialImageUrl = null; // 새 이미지를 선택했으니 기존 이미지 URL은 더 이상 사용 안 함
       });
     }
   }
@@ -173,11 +179,11 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
 
       // RecipeEntity 객체 생성 (업데이트 시 기존 UID 사용)
       final RecipeEntity recipeToSave = RecipeEntity(
-        uid: isEditing ? _recipe!.uid : '새 UID', // TODO: 새 레시피는 Firestore가 생성하는 UID 사용 또는 UseCase에서 처리
+        uid: isEditing ? _recipe!.uid : '', // 편집 모드일 때 기존 UID 사용, 추가 모드일 때 빈 문자열 (UseCase에서 생성)
         title: title,
         ingredients: ingredients, // TODO: Entity에 ingredients 필드 추가 필요
         steps: steps, // TODO: Entity에 steps 필드 추가 필요
-        photoUrl: isEditing ? _recipe!.photoUrl : null, // 편집 모드일 때 기존 이미지 URL 유지
+        // photoUrl: isEditing ? _recipe!.photoUrl : null, // (편집 모드일 때 기존 이미지 URL 유지) <- Bloc으로 이동
         // TODO: 카테고리, 작성자 (현재 로그인 사용자 UID), 생성/수정 날짜 등 추가 필드
       );
 
@@ -259,14 +265,16 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                           height: 200,
                           child: _selectedImage != null // 새 이미지 선택 시 미리보기
                               ? ClipRRect( // 이미지 자체도 모서리 둥글게 (Card 모서리 둥글기와 일치 또는 살짝 작게)
-                            borderRadius: BorderRadius.circular(theme.cardTheme.shape is RoundedRectangleBorder ? (theme.cardTheme.shape as RoundedRectangleBorder).borderRadius.resolve(Directionality.of(context)).topLeft.x - 1.0 : 0.0), // Card 테마 둥글기 값 가져와서 적용
+                            borderRadius: BorderRadius.circular(kSpacingMedium - 1.0), // Card 테마 둥글기 값 가져와서 적용
                             child: Image.file(File(_selectedImage!.path), fit: BoxFit.cover),
                           )
-                              : isEditing && _recipe != null && _recipe!.photoUrl != null // 편집 모드이고 기존 이미지 있을 때
+
+                          // 편집 모드일 때 기존 이미지 미리보기 (새 이미지 선택 안 했을 경우)
+                              : _initialImageUrl != null && _initialImageUrl!.isNotEmpty // 기존 이미지 URL이 있다면
                               ? ClipRRect( // 이미지 자체도 모서리 둥글게
-                            borderRadius: BorderRadius.circular(theme.cardTheme.shape is RoundedRectangleBorder ? (theme.cardTheme.shape as RoundedRectangleBorder).borderRadius.resolve(Directionality.of(context)).topLeft.x - 1.0 : 0.0), // Card 테마 둥글기 값 가져와서 적용
+                            borderRadius: BorderRadius.circular(kSpacingMedium - 1.0), // Card 테마 둥글기 값 가져와서 적용
                             child: CachedNetworkImage( // 기존 이미지 미리보기
-                              imageUrl: _recipe!.photoUrl!,
+                              imageUrl: _initialImageUrl!,
                               fit: BoxFit.cover,
                               placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
                               errorWidget: (context, url, error) => const Icon(Icons.error_outline),
@@ -325,13 +333,12 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                                 border: OutlineInputBorder(),
                                 contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 15), // 패딩 조정
                               ),
-                              // validator: (value) { if (value == null || value.isEmpty) return '재료를 입력하세요'; return null; }, // 재료는 필수가 아닐 수도 있으니 주석처리
                             ),
                           ),
                           // 삭제 버튼
                           IconButton(
                             icon: const Icon(Icons.remove_circle_outline),
-                            color: Colors.redAccent,
+                            color: colorScheme.error,
                             onPressed: () => _removeIngredientField(index),
                           ),
                         ],
@@ -343,10 +350,10 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                     onPressed: _addIngredientField,
                     child: const Text('+ 재료 추가'),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: kSpacingMedium),
 
                   // 조리법 입력 섹션 (동적 목록)
-                  Text('조리법', style: Theme.of(context).textTheme.titleMedium),
+                  Text('조리법', style: textTheme.titleMedium),
                   const SizedBox(height: kSpacingSmall),
                   ListView.builder( // 조리법 단계 입력 필드 목록
                     shrinkWrap: true,
@@ -365,10 +372,8 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                           Expanded(
                             child: TextFormField(
                               controller: _stepControllers[index],
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 hintText: '예: 오븐을 180도로 예열합니다.',
-                                border: OutlineInputBorder(),
-                                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 15), // 패딩 조정
                               ),
                               maxLines: null, // 여러 줄 입력 가능
                               keyboardType: TextInputType.multiline, // 멀티라인 키보드
@@ -378,7 +383,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                           // 삭제 버튼
                           IconButton(
                             icon: const Icon(Icons.remove_circle_outline),
-                            color: Colors.redAccent,
+                            color: colorScheme.error,
                             onPressed: () => _removeStepField(index),
                           ),
                         ],
