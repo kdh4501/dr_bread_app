@@ -110,6 +110,7 @@ class RecipeActionBloc extends Bloc<RecipeActionEvent, RecipeActionState> {
 
   // 레시피 삭제 요청 이벤트 핸들러
   Future<void> _onDeleteRecipeRequested(DeleteRecipeRequested event, Emitter<RecipeActionState> emit) async {
+    debugPrint('RecipeActionBloc: _onDeleteRecipeRequested called.');
     emit(RecipeActionLoading()); // 로딩 상태 발행
     try {
       // 이미지 URL이 있다면 Storage에서 먼저 삭제

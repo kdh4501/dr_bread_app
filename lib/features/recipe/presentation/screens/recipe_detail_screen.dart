@@ -72,10 +72,13 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
       ),
     );
 
-    if (confirmed == true && _recipeDetailBloc is RecipeDetailLoaded) { // 사용자가 확인을 누르고 레시피 데이터가 있을 때
+    if (confirmed == true && _recipeDetailBloc.state is RecipeDetailLoaded) { // 사용자가 확인을 누르고 레시피 데이터가 있을 때
       final loadedRecipe = (_recipeDetailBloc.state as RecipeDetailLoaded).recipe;
+      debugPrint('RecipeDetailScreen: Adding DeleteRecipeRequested event for UID: ${loadedRecipe.uid}');
       // Bloc에 이벤트 추가
       _recipeActionBloc.add(DeleteRecipeRequested(uid: loadedRecipe.uid, imageUrl: loadedRecipe.photoUrl));
+    } else {
+      debugPrint('RecipeDetailScreen: Delete cancelled or recipe not loaded.'); // <-- 로그 추가!
     }
   }
 
