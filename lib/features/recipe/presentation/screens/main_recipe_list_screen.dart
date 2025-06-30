@@ -94,13 +94,15 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
             hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onPrimary.withOpacity(0.7)),
             border: InputBorder.none, // 테두리 없음
             prefixIcon: Icon(Icons.search, color: colorScheme.onPrimary),
-            suffixIcon: IconButton(
+            suffixIcon: _searchController.text.isNotEmpty
+                ? IconButton(
               icon: Icon(Icons.clear, color: colorScheme.onPrimary),
               onPressed: () {
                 _searchController.clear();
                 _recipeListBloc.add(SearchRecipes('')); // 검색어 지우고 전체 목록 요청
               },
-            ),
+            )
+                : null,
           ),
           style: textTheme.titleMedium?.copyWith(color: colorScheme.onPrimary),
           autofocus: true, // 자동으로 포커스
@@ -109,7 +111,7 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
         actions: [
           // 검색 아이콘 버튼
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: Icon(_isSearching ? Icons.close : Icons.search),
             onPressed: () {
               setState(() {
                 _isSearching = !_isSearching;
