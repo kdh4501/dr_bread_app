@@ -32,6 +32,7 @@ import 'features/recipe/domain/usecases/update_recipe_usecase.dart';
 import 'features/recipe/domain/usecases/upload_image_usecase.dart';
 import 'features/recipe/presentation/bloc/recipe_action_bloc.dart';
 import 'features/recipe/presentation/bloc/recipe_detail_bloc.dart';
+import 'features/recipe/presentation/bloc/recipe_list_bloc.dart';
 import 'features/recipe/presentation/providers/recipe_list_provider.dart';
 import 'firebase_options.dart';
 
@@ -75,9 +76,9 @@ void main() async {
             getIt<AuthRepository>(), // AuthRepository 주입
           ),
         ),
-        ChangeNotifierProvider<RecipeListProvider>( // <-- 추가!
-          create: (_) => RecipeListProvider(getIt<GetRecipesUseCase>(), getIt<SearchRecipesUseCase>()), // <-- UseCase 주입!
-          // lazy: false, // 앱 시작 시 바로 RecipeListProvider 생성 (선택 사항)
+        // RecipeListProvider 대신 RecipeListBloc을 BlocProvider로 등록
+        BlocProvider<RecipeListBloc>(
+          create: (_) => RecipeListBloc(getIt<GetRecipesUseCase>(), getIt<SearchRecipesUseCase>()),
         ),
         BlocProvider<RecipeActionBloc>(
           create: (_) => RecipeActionBloc(
