@@ -16,8 +16,6 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
   final SearchRecipesUseCase _searchRecipesUseCase;
   // TODO: FilterRecipesUseCase _filterRecipesUseCase;
 
-  StreamSubscription<List<RecipeEntity>>? _recipesSubscription; // 레시피 스트림 구독
-
   RecipeListBloc(this._getRecipesUseCase, this._searchRecipesUseCase) : super(RecipeListInitial()) {
     on<FetchRecipes>(_onFetchRecipes);
     on<SearchRecipes>(_onSearchRecipes);
@@ -29,7 +27,6 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
 
   // 레시피 목록 초기 조회/새로고침 이벤트 핸들러
   Future<void> _onFetchRecipes(FetchRecipes event, Emitter<RecipeListState> emit) async {
-    _recipesSubscription?.cancel(); // 이전 구독 취소
 
     emit(RecipeListLoading(recipes: state.recipes, searchQuery: state.searchQuery, filterOptions: state.filterOptions)); // 로딩 상태 발행
 
@@ -37,12 +34,13 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
       // UseCase에서 스트림 가져오기 (필터링 조건이 있다면 UseCase에서 처리)
       final recipeStream = _getRecipesUseCase(); // 현재는 필터링 없는 전체 목록 스트림
 
-      _recipesSubscription = recipeStream.listen(
-            (recipes) {
+      await emit.onEach(
+          recipeStream,
+          onData: (recipes) {
           // 스트림에서 받은 데이터로 상태 업데이트
           emit(RecipeListLoaded(recipes: recipes, searchQuery: state.searchQuery, filterOptions: state.filterOptions));
         },
-        onError: (error) {
+        onError: (error, stackTrace) {
           emit(RecipeListError(errorMessage: '레시피를 불러오는데 실패했습니다: $error', recipes: state.recipes, searchQuery: state.searchQuery, filterOptions: state.filterOptions));
         },
       );
@@ -53,7 +51,6 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
 
   // 레시피 검색 이벤트 핸들러
   Future<void> _onSearchRecipes(SearchRecipes event, Emitter<RecipeListState> emit) async {
-    _recipesSubscription?.cancel(); // 검색 시 실시간 스트림 구독 취소
 
     emit(RecipeListLoading(recipes: state.recipes, searchQuery: event.query, filterOptions: state.filterOptions)); // 로딩 상태 발행
 
@@ -67,7 +64,6 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
 
   // 레시피 필터링 이벤트 핸들러
   Future<void> _onApplyFilter(ApplyFilter event, Emitter<RecipeListState> emit) async {
-    _recipesSubscription?.cancel(); // 필터링 시 실시간 스트림 구독 취소
 
     emit(RecipeListLoading(recipes: state.recipes, searchQuery: state.searchQuery, filterOptions: event.filterOptions)); // 로딩 상태 발행
 
@@ -90,7 +86,6 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
 
   @override
   Future<void> close() {
-    _recipesSubscription?.cancel(); // Bloc이 dispose될 때 스트림 구독 취소
     return super.close();
   }
 }

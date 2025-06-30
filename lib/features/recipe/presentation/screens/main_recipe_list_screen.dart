@@ -2,15 +2,24 @@ import 'package:dr_bread_app/features/recipe/domain/usecases/add_recipe_usecase.
 import 'package:dr_bread_app/features/recipe/domain/usecases/get_recipe_detail_usecase.dart';
 import 'package:dr_bread_app/features/recipe/domain/usecases/update_recipe_usecase.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart'; // Provider 사용
+import '../../../../core/constants/app_contstants.dart';
 import '../../domain/usecases/delete_recipe_usecase.dart';
 import '../../domain/usecases/upload_image_usecase.dart';
+import '../bloc/recipe_action_bloc.dart';
+import '../bloc/recipe_detail_bloc.dart';
+import '../bloc/recipe_list_bloc.dart';
+import '../bloc/recipe_list_event.dart';
+import '../bloc/recipe_list_state.dart';
 import '../providers/recipe_list_provider.dart'; // RecipeListProvider 임포트
+import '../widgets/filter_bottom_sheet.dart';
 import '../widgets/recipe_card.dart'; // RecipeCard 위젯 임포트
 import 'add_recipe_screen.dart'; // 레시피 추가 화면 임포트
 import 'recipe_detail_screen.dart'; // 레시피 상세 화면 임포트
 
+final getIt = GetIt.instance;
 class MainRecipeListScreen extends StatefulWidget { // StatefulWidget 또는 StatelessWidget 사용 가능
   const MainRecipeListScreen({super.key});
 
@@ -20,44 +29,107 @@ class MainRecipeListScreen extends StatefulWidget { // StatefulWidget 또는 Sta
 
 class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
 
+  // 검색 바 컨트롤러
+  final TextEditingController _searchController = TextEditingController();
+  // 검색 바 표시 여부 (트렌디함을 반영하여 앱바에 통합)
+  bool _isSearching = false;
+
+  late final RecipeListBloc _recipeListBloc; // RecipeListBloc 인스턴스
+  late final RecipeActionBloc _recipeActionBloc; // AddRecipeScreen으로 전달용
+
   // 화면 처음 로딩 시 레시피 데이터 가져오기 호출
   @override
   void initState() {
     super.initState();
-    // Provider 인스턴스에 접근하여 데이터 로딩 함수 호출
-    // initState에서는 context.read<Provider>() 또는 Future.microtask 사용
-    Future.microtask(() => Provider.of<RecipeListProvider>(context, listen: false).fetchRecipes());
+    _recipeListBloc = context.read<RecipeListBloc>();
+    _recipeActionBloc = context.read<RecipeActionBloc>(); // AddRecipeScreen으로 전달용
+
+    // 검색어 입력 변경 감지
+    _searchController.addListener(_onSearchChanged);
   }
 
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  // 검색어 변경 시 호출될 함수
+  void _onSearchChanged() {
+    // 검색어 입력 시 일정 시간 지연 후 검색 이벤트 추가 (debounce)
+    // TODO: debounce 구현 (예: Timer 사용)
+    _recipeListBloc.add(SearchRecipes(_searchController.text));
+  }
+
+  // 필터링 다이얼로그 표시
+  void _showFilterDialog(RecipeFilterOptions currentFilter) {
+    showModalBottomSheet( // 트렌디함을 반영하여 BottomSheet 사용
+      context: context,
+      builder: (context) {
+        return FilterBottomSheet(
+          currentFilter: currentFilter,
+          onApplyFilter: (newFilter) {
+            _recipeListBloc.add(ApplyFilter(newFilter));
+            Navigator.pop(context); // BottomSheet 닫기
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    // RecipeListProvider 상태 변화를 listen (Provider 사용 예시)
-    // Consumer 위젯을 사용하면 특정 부분만 리빌드하여 성능에 더 유리할 수 있음
-    // 여기서는 전체 화면을 리빌드하는 Provider.of 사용
-    final recipeListProvider = Provider.of<RecipeListProvider>(context);
-    final getIt = GetIt.instance;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('빵빵박사 레시피'), // 앱바 제목
+        title: _isSearching // 검색 중이면 검색 바, 아니면 제목
+            ? TextField(
+          controller: _searchController,
+          decoration: InputDecoration(
+            hintText: '레시피 검색...',
+            hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onPrimary.withOpacity(0.7)),
+            border: InputBorder.none, // 테두리 없음
+            prefixIcon: Icon(Icons.search, color: colorScheme.onPrimary),
+            suffixIcon: IconButton(
+              icon: Icon(Icons.clear, color: colorScheme.onPrimary),
+              onPressed: () {
+                _searchController.clear();
+                _recipeListBloc.add(SearchRecipes('')); // 검색어 지우고 전체 목록 요청
+              },
+            ),
+          ),
+          style: textTheme.titleMedium?.copyWith(color: colorScheme.onPrimary),
+          autofocus: true, // 자동으로 포커스
+        )
+            :  const Text('빵빵박사 레시피'), // 앱바 제목
         actions: [
           // 검색 아이콘 버튼
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
-              // TODO: 검색 기능 구현 (검색 바 노출 또는 검색 화면 이동)
-              // 검색 바를 앱바 아래에 토글하거나, Navigator.push 등으로 검색 전용 화면으로 이동
-              debugPrint('검색 아이콘 클릭');
+              setState(() {
+                _isSearching = !_isSearching;
+                if (!_isSearching) { // 검색 종료 시 검색어 지우고 전체 목록 요청
+                  _searchController.clear();
+                  _recipeListBloc.add(SearchRecipes(''));
+                }
+              });
             },
           ),
-          // 필터 아이콘 버튼
-          IconButton(
-            icon: const Icon(Icons.filter_list),
-            onPressed: () {
-              // TODO: 필터링 기능 구현 (다이얼로그 또는 화면 노출)
-              debugPrint('필터 아이콘 클릭');
-            },
-          ),
+          // 필터 아이콘은 검색 중이 아닐 때만 표시
+          if (!_isSearching)
+            BlocBuilder<RecipeListBloc, RecipeListState>( // 필터 옵션을 가져오기 위해 BlocBuilder 사용
+              builder: (context, state) {
+                return IconButton(
+                  icon: const Icon(Icons.filter_list),
+                  onPressed: () => _showFilterDialog(state.filterOptions), // 현재 필터 옵션 전달
+                );
+              },
+            ),
           // TODO: 로그아웃 버튼 (옵션)
           // IconButton(
           //   icon: const Icon(Icons.logout),
@@ -67,65 +139,88 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
           // ),
         ],
       ),
-      body: Builder( // Builder 위젯을 사용하여 context 문제 해결 (옵션)
-        builder: (context) {
-          // 로딩 중 상태 처리
-          if (recipeListProvider.isLoading) {
-            return const Center(child: CircularProgressIndicator()); // 로딩 스피너
+      body: BlocConsumer<RecipeListBloc, RecipeListState>(
+        listener: (context, state) {
+          if (state is RecipeListError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.errorMessage ?? '오류가 발생했습니다.'),
+                backgroundColor: colorScheme.error,
+              ),
+            );
           }
-
-          // 에러 상태 처리
-          if (recipeListProvider.errorMessage != null) {
-            return Center(child: Text('레시피 로딩 실패: ${recipeListProvider.errorMessage}')); // 에러 메시지
-          }
-
-          // 데이터 없음 상태 처리
-          if (recipeListProvider.recipes.isEmpty) {
-            return const Center(child: Text('아직 레시피가 없어요!\n아래 + 버튼을 눌러 첫 레시피를 추가해보세요!', textAlign: TextAlign.center,)); // 빈 화면 메시지
-          }
-
-          // 레시피 목록 표시
-          return ListView.builder(
-            itemCount: recipeListProvider.recipes.length, // 레시피 개수
-            itemBuilder: (context, index) {
-              final recipe = recipeListProvider.recipes[index]; // 해당 인덱스의 레시피 데이터
-              return RecipeCard( // 레시피 카드 위젯 사용
-                recipe: recipe, // RecipeEntity 객체 전달
-                onTap: () {
-                  // 레시피 카드 클릭 시 상세 화면으로 이동
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        // get_it에서 UseCase 인스턴스들을 직접 가져옴
-                        final getRecipeDetailUseCase = getIt<GetRecipeDetailUseCase>();
-                        final deleteRecipeUseCase = getIt<DeleteRecipeUseCase>();
-
-                        return MultiProvider( // 여러 Provider를 설정하기 위해 MultiProvider 사용
-                          providers: [
-                            // GetRecipeDetailUseCase Provider 설정
-                            Provider<GetRecipeDetailUseCase>(
-                              create: (_) => getRecipeDetailUseCase, // get_it에서 가져온 인스턴스 제공
-                            ),
-                            // DeleteRecipeUseCase Provider 설정
-                            Provider<DeleteRecipeUseCase>(
-                              create: (_) => deleteRecipeUseCase, // get_it에서 가져온 인스턴스 제공
-                            ),
-                            // TODO: 필요시 다른 Provider 추가
-                          ],
-                          // ↓↓↓↓↓ MultiProvider의 child는 RecipeDetailScreen 위젯이 되어야 함! ↓↓↓↓↓
-                          child: RecipeDetailScreen(recipeId: recipe.uid), // <-- RecipeDetailScreen 위젯! 레시피 ID 전달!
-                          // ↑↑↑↑↑ MultiProvider의 child는 RecipeDetailScreen 위젯이 되어야 함! ↑↑↑↑↑
-                        );
-                      }
-                    ),
-                  );
-                },
-              );
-            },
-          );
         },
+          builder: (context, state) {
+            // 로딩 중 상태 처리
+            if (state is RecipeListLoading) {
+              return const Center(child: CircularProgressIndicator()); // 로딩 스피너
+            }
+
+            // 에러 상태 처리
+            if (state is RecipeListError) {
+              return Center(child: Text(state.errorMessage ?? '레시피를 불러오는데 실패했습니다.')); // 에러 메시지
+            }
+
+            // 데이터 없음 상태 처리
+            if (state.recipes.isEmpty) {
+              return const Center(child: Text('아직 레시피가 없어요!\n아래 + 버튼을 눌러 첫 레시피를 추가해보세요!', textAlign: TextAlign.center,)); // 빈 화면 메시지
+            }
+
+            // 레시피 목록이 비어있으면 (검색/필터링 결과 없음 포함)
+            if (state.recipes.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.search_off, size: kIconSizeLarge, color: colorScheme.onSurfaceVariant),
+                    const SizedBox(height: kSpacingMedium),
+                    Text(
+                      '검색 결과가 없거나 레시피가 없습니다.',
+                      style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant),
+                    ),
+                    // 필터가 적용된 상태라면 필터 초기화 버튼
+                    if (state.filterOptions != const RecipeFilterOptions())
+                      TextButton(
+                        onPressed: () {
+                          _recipeListBloc.add(ApplyFilter(const RecipeFilterOptions())); // 필터 초기화 이벤트
+                        },
+                        child: const Text('필터 초기화'),
+                      ),
+                  ],
+                ),
+              );
+            }
+
+            // 레시피 목록 표시
+            return ListView.builder(
+              padding: const EdgeInsets.all(kDefaultPadding), // 상수 사용
+              itemCount: state.recipes.length, // 레시피 개수
+              itemBuilder: (context, index) {
+                final recipe = state.recipes[index]; // 해당 인덱스의 레시피 데이터
+                return RecipeCard( // 레시피 카드 위젯 사용
+                  recipe: recipe, // RecipeEntity 객체 전달
+                  onTap: () {
+                    // 레시피 카드 클릭 시 상세 화면으로 이동
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) {
+
+                            // RecipeDetailScreen에서 필요한 RecipeDetailBloc을 BlocProvider로 제공
+                            return BlocProvider<RecipeDetailBloc>(
+                              create: (context) => RecipeDetailBloc(getIt<GetRecipeDetailUseCase>()),
+                              child: RecipeDetailScreen(recipeId: recipe.uid),
+                            );
+                          }
+                      ),
+                    );
+                  },
+                );
+              },
+            );
+          },
       ),
+
       // 새 레시피 추가 FAB
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -134,29 +229,18 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
             context,
             MaterialPageRoute(
                 builder: (context) {
-                  // ↓↓↓↓↓ get_it에서 UseCase 인스턴스를 가져와서 Provider에 전달 ↓↓↓↓↓
-                  // RecipeRepository는 이제 get_it에 등록되어 있으므로 Provider로 가져올 필요 없음
-                  // final recipeRepository = context.read<RecipeRepository>(); // <-- 이 코드 삭제!
-
-                  // AddRecipeScreen에서 필요한 UseCase 인스턴스들을 get_it에서 직접 가져옴
-                  final addRecipeUseCase = getIt<AddRecipeUseCase>();
-                  final updateRecipeUseCase = getIt<UpdateRecipeUseCase>();
-                  final getRecipeDetailUseCase = getIt<GetRecipeDetailUseCase>();
-                  final uploadImageUseCase = getIt<UploadImageUseCase>(); // <-- 이미지 업로드 UseCase 가져옴
-
-                  // final recipeRepository = Provider.of<RecipeRepository>(context, listen: false);  // 주석 풀면 오류남.
-                  return MultiProvider(
-                      providers: [
-                        Provider<AddRecipeUseCase>(create: (_) => addRecipeUseCase,),
-                        Provider<UpdateRecipeUseCase>(create: (_) => updateRecipeUseCase,),
-                        Provider<GetRecipeDetailUseCase>(create: (_) => getRecipeDetailUseCase,),
-                        Provider<UploadImageUseCase>(create: (_) => uploadImageUseCase),
-                      ],
+                  // RecipeActionBloc 인스턴스 재사용하여 AddRecipeScreen으로 전달
+                  return BlocProvider<RecipeActionBloc>.value(
+                    value: _recipeActionBloc,
                     child: const AddRecipeScreen(),
                   );
-                }
+                },
             ),
-          );
+          ).then((result) {
+            if (result == true) { // 추가/편집 후 돌아왔을 때 목록 새로고침
+              _recipeListBloc.add(FetchRecipes());
+            }
+          });
         },
         tooltip: '새 레시피 추가', // 길게 눌렀을 때 나오는 설명
         child: const Icon(Icons.add), // + 아이콘
