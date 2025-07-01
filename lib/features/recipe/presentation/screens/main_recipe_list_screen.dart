@@ -8,6 +8,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart'; // Provider 사용
 import '../../../../core/constants/app_contstants.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../auth/presentation/bloc/auth_event.dart';
 import '../../domain/usecases/delete_recipe_usecase.dart';
 import '../../domain/usecases/upload_image_usecase.dart';
 import '../bloc/recipe_action_bloc.dart';
@@ -143,7 +145,7 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
           style: textTheme.titleMedium?.copyWith(color: colorScheme.onPrimary),
           autofocus: true, // 자동으로 포커스
         )
-            :  const Text('빵빵박사 레시피'), // 앱바 제목
+            :  Text('빵빵박사 레시피', style: theme.appBarTheme.titleTextStyle), // 앱바 제목
         actions: [
           // 검색 아이콘 버튼
           IconButton(

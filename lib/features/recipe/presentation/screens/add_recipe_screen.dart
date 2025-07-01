@@ -246,9 +246,10 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEditing ? '레시피 편집' : '새 레시피 추가'), // 모드에 따라 제목 변경
+        title: Text(isEditing ? '레시피 편집' : '새 레시피 추가', style: theme.appBarTheme.titleTextStyle), // 모드에 따라 제목 변경
         actions: [
           // 저장 버튼은 이제 Bloc의 로딩 상태를 구독
           BlocBuilder<RecipeActionBloc, RecipeActionState>(
@@ -288,7 +289,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
             );
           }
         },
-        builder: (BuildContext context, RecipeActionState state) {
+        builder: (context, state) {
           // 로딩 중이면 로딩 스피너 표시 (전체 화면 로딩)
           if (state is RecipeActionLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -298,6 +299,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
             padding: const EdgeInsets.all(kDefaultPadding),
             child: Form( // 폼 위젯 사용
               key: _formKey, // 폼 키 연결
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               child: ListView( // 스크롤 가능하도록 ListView 사용
                 children: [
                   // 레시피 사진 선택/미리보기
@@ -323,18 +325,17 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                               borderRadius: BorderRadius.circular(kSpacingMedium - 1.0), // Card 테마 둥글기 값 가져와서 적용
                               child: Image.file(File(_selectedImage!.path), fit: BoxFit.cover),
                             )
-
                             // 편집 모드일 때 기존 이미지 미리보기 (새 이미지 선택 안 했을 경우)
-                                : _initialImageUrl != null && _initialImageUrl!.isNotEmpty // 기존 이미지 URL이 있다면
-                                ? ClipRRect( // 이미지 자체도 모서리 둥글게
-                              borderRadius: BorderRadius.circular(kSpacingMedium - 1.0), // Card 테마 둥글기 값 가져와서 적용
-                              child: CachedNetworkImage( // 기존 이미지 미리보기
-                                imageUrl: _initialImageUrl!,
-                                fit: BoxFit.cover,
-                                placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                                errorWidget: (context, url, error) => const Icon(Icons.error_outline),
-                              ),
-                            )
+                            : _initialImageUrl != null && _initialImageUrl!.isNotEmpty // 기존 이미지 URL이 있다면
+                              ? ClipRRect( // 이미지 자체도 모서리 둥글게
+                                  borderRadius: BorderRadius.circular(kSpacingMedium - 1.0), // Card 테마 둥글기 값 가져와서 적용
+                                  child: CachedNetworkImage( // 기존 이미지 미리보기
+                                    imageUrl: _initialImageUrl!,
+                                    fit: BoxFit.cover,
+                                    placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                                    errorWidget: (context, url, error) => const Icon(Icons.error_outline),
+                                  ),
+                                )
                                 : Column( // 사진 없을 때 기본 UI
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -384,9 +385,12 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                     ),
                     validator: (value) { // 유효성 검사 (비어있으면 에러 메시지)
                       if (value == null || value.isEmpty) {
-                        return '제목을 입력해주세요.';
+                        return '레시피 제목은 비어있을 수 없습니다.';
                       }
-                      return null; // 유효함
+                      if (value.length < 2) {
+                        return '제목은 최소 2글자 이상이어야 합니다.';
+                      }
+                      return null;
                     },
                   ),
                   const SizedBox(height: kSpacingMedium),
@@ -394,7 +398,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                   // TODO: 카테고리 선택 DropdownButton 또는 다른 필드들 추가
 
                   // 재료 입력 섹션 (동적 목록)
-                  Text('재료', style: textTheme.titleMedium),
+                  Text('재료', style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface)),
                   const SizedBox(height: kSpacingSmall),
                   ListView.builder( // 재료 입력 필드 목록
                     shrinkWrap: true, // ListView를 Column 안에 넣을 때 필요
@@ -410,9 +414,8 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                               controller: _ingredientControllers[index],
                               decoration: InputDecoration(
                                 hintText: '예: 강력분 200g', // 힌트 텍스트
-                                border: OutlineInputBorder(),
-                                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 15), // 패딩 조정
                               ),
+                              validator: (value) { return null; },
                             ),
                           ),
                           // 삭제 버튼
@@ -433,7 +436,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                   const SizedBox(height: kSpacingMedium),
 
                   // 조리법 입력 섹션 (동적 목록)
-                  Text('조리법', style: textTheme.titleMedium),
+                  Text('조리법', style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface)),
                   const SizedBox(height: kSpacingSmall),
                   ListView.builder( // 조리법 단계 입력 필드 목록
                     shrinkWrap: true,
@@ -447,7 +450,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                           // 단계 번호 표시
                           Padding(
                             padding: const EdgeInsets.only(top: 15.0, right: kSpacingSmall),
-                            child: Text('${index + 1}.', style: textTheme.bodyMedium),
+                            child: Text('${index + 1}.', style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface)),
                           ),
                           Expanded(
                             child: TextFormField(
@@ -457,7 +460,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                               ),
                               maxLines: null, // 여러 줄 입력 가능
                               keyboardType: TextInputType.multiline, // 멀티라인 키보드
-                              // validator: (value) { if (value == null || value.isEmpty) return '조리 단계를 입력하세요'; return null; }, // 조리 단계는 필수가 아닐 수도 있으니 주석처리
+                              validator: (value) { return null; },
                             ),
                           ),
                           // 삭제 버튼

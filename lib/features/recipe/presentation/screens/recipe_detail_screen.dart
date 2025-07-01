@@ -95,9 +95,9 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
         title: BlocBuilder<RecipeDetailBloc, RecipeDetailState>(
           builder: (context, state) {
             if (state is RecipeDetailLoaded) {
-              return Text(state.recipe.title);
+              return Text(state.recipe.title, style: theme.appBarTheme.titleTextStyle);
             }
-            return const Text('레시피 상세');
+            return Text('레시피 상세', style: theme.appBarTheme.titleTextStyle);
           },
         ),
         actions: [
@@ -210,7 +210,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                         ),
                       )
                     else
-                    // 사진 없을 때 Placeholder
+                      // 사진 없을 때 Placeholder
                       Container(
                         width: double.infinity,
                         height: 250,
@@ -223,19 +223,19 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                     // 레시피 제목
                     Text(
                       recipe.title,
-                      style: textTheme.titleLarge, // 테마에서 제목 스타일 가져오기
+                      style: textTheme.titleLarge?.copyWith(color: colorScheme.onSurface), // 테마에서 제목 스타일 가져오기
                     ),
 
                     // TODO: 간단 설명, 카테고리, 소요 시간 등 추가 정보 표시
                     const SizedBox(height: kSpacingLarge),
 
                     // 재료 목록 섹션
-                    Text('재료', style: textTheme.titleMedium),
+                    Text('재료', style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface)),
                     const SizedBox(height: kSpacingSmall),
                     // TODO: 재료 목록 (List<String> ingredients; 이런 식으로 RecipeEntity에 있다면)
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: recipe.ingredients?.map((ingredient) => Text('- $ingredient', style: textTheme.bodyMedium)).toList() ?? [],
+                      children: recipe.ingredients?.map((ingredient) => Text('- $ingredient', style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface))).toList() ?? [], // bodyMedium 스타일, onSurface 색상
                     ),
 
                     const SizedBox(height: kSpacingLarge),
@@ -251,7 +251,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                         String stepText = entry.value;
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: kSpacingExtraSmall), // 상수 사용
-                          child: Text('$stepNum. $stepText', style: textTheme.bodyMedium), // 테마 스타일 활용
+                          child: Text('$stepNum. $stepText', style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface)), // bodyMedium 스타일, onSurface 색상
                         );
                       }).toList() ?? [],
                     ),

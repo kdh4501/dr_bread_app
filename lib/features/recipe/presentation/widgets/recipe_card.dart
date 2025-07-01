@@ -88,11 +88,11 @@ class RecipeCard extends StatelessWidget {
                 children: [
                   Icon(Icons.kitchen, size: kIconSizeMedium, color: colorScheme.onSurfaceVariant),
                   const SizedBox(width: kSpacingExtraSmall),
-                  Text('${recipe.ingredients?.length ?? 0}가지 재료', style: textTheme.bodySmall),
+                  Text('${recipe.ingredients?.length ?? 0}가지 재료', style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface)),
                   const SizedBox(width: kSpacingMedium),
                   Icon(Icons.format_list_numbered, size: kIconSizeMedium, color: colorScheme.onSurfaceVariant),
                   const SizedBox(width: kSpacingExtraSmall),
-                  Text('${recipe.steps?.length ?? 0}단계', style: textTheme.bodySmall),
+                  Text('${recipe.steps?.length ?? 0}단계', style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface)),
                 ],
               ),
               // TODO: 레시피 간단 설명, 작성자, 날짜 등 추가 정보 표시 (RecipeEntity에 있다면)
