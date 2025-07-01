@@ -174,7 +174,47 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
 
             // 데이터 없음 상태 처리
             if (state.recipes.isEmpty) {
-              return const Center(child: Text('아직 레시피가 없어요!\n아래 + 버튼을 눌러 첫 레시피를 추가해보세요!', textAlign: TextAlign.center,)); // 빈 화면 메시지
+              // 검색어가 있는 상태에서 결과가 없으면 '검색 결과 없음' 메시지
+              if (state.searchQuery.isNotEmpty || state.filterOptions != const RecipeFilterOptions()) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.search_off, size: kIconSizeLarge, color: colorScheme.onSurfaceVariant),
+                      const SizedBox(height: kSpacingMedium),
+                      Text(
+                        '검색 결과가 없거나 필터에 해당하는 레시피가 없습니다.', // 메시지 변경
+                        textAlign: TextAlign.center, // 텍스트 중앙 정렬
+                        style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant),
+                      ),
+                      // 필터가 적용된 상태라면 필터 초기화 버튼
+                      if (state.filterOptions != const RecipeFilterOptions())
+                        TextButton(
+                          onPressed: () {
+                            _recipeListBloc.add(ApplyFilter(const RecipeFilterOptions())); // 필터 초기화 이벤트
+                          },
+                          child: const Text('필터 초기화'),
+                        ),
+                    ],
+                  ),
+                );
+              } else {
+                // 검색어도 필터도 없는 상태에서 레시피가 없으면 '아직 레시피 없음' 메시지
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.menu_book, size: kIconSizeLarge, color: colorScheme.onSurfaceVariant), // 아이콘 변경
+                      const SizedBox(height: kSpacingMedium),
+                      Text(
+                        '아직 레시피가 없어요!\n아래 + 버튼을 눌러 첫 레시피를 추가해보세요!', // 메시지 유지
+                        textAlign: TextAlign.center,
+                        style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant),
+                      ),
+                    ],
+                  ),
+                );
+              }
             }
 
             // 레시피 목록이 비어있으면 (검색/필터링 결과 없음 포함)
