@@ -56,7 +56,10 @@ class RecipeListLoading extends RecipeListState { // 로딩 중 상태
     required super.recipes,
     required super.searchQuery,
     required super.filterOptions,
-  }) : super(isLoading: true);
+  }) : super(
+      isLoading: true,
+      errorMessage: null
+  );
 }
 
 class RecipeListLoaded extends RecipeListState { // 목록 로딩 완료 상태
@@ -64,7 +67,10 @@ class RecipeListLoaded extends RecipeListState { // 목록 로딩 완료 상태
     required super.recipes,
     required super.searchQuery,
     required super.filterOptions,
-  }) : super(isLoading: false);
+  }) : super(
+    isLoading: false,
+    errorMessage: null,
+  );
 }
 
 class RecipeListError extends RecipeListState { // 에러 상태
@@ -73,5 +79,7 @@ class RecipeListError extends RecipeListState { // 에러 상태
     required super.recipes, // 에러 발생 시에도 기존 목록은 유지할 수 있음
     required super.searchQuery,
     required super.filterOptions,
-  }) : super(isLoading: false);
+  }) : super(
+      isLoading: false,
+  );
 }

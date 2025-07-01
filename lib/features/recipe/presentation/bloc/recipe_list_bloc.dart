@@ -20,6 +20,7 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
     on<FetchRecipes>(_onFetchRecipes);
     on<SearchRecipes>(_onSearchRecipes);
     on<ApplyFilter>(_onApplyFilter);
+    on<ClearRecipes>(_onClearRecipes);
 
     // Bloc 생성 시 초기 데이터 로딩 (FetchRecipes 이벤트 추가)
     add(FetchRecipes());
@@ -82,6 +83,14 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
     } catch (e) {
       emit(RecipeListError(errorMessage: '레시피 필터링에 실패했습니다: $e', recipes: state.recipes, searchQuery: state.searchQuery, filterOptions: event.filterOptions));
     }
+  }
+
+  Future<void> _onClearRecipes(ClearRecipes event, Emitter<RecipeListState> emit) async {
+    emit(RecipeListLoaded( // 빈 목록으로 상태 업데이트
+      recipes: [],
+      searchQuery: '',
+      filterOptions: const RecipeFilterOptions(),
+    ));
   }
 
   @override

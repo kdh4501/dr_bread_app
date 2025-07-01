@@ -117,5 +117,10 @@ class RecipeRepositoryImpl implements RecipeRepository {
     }
   }
 
+  @override
+  Future<void> clearCache() async {
+    await dataSource.clearCache();
+  }
+
 // TODO: 필요에 따라 추가적인 데이터 작업 메서드 구현
 }

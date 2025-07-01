@@ -3,6 +3,9 @@ import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase User UID 가져오기용 (getIt으로 가져옴)
 import 'package:get_it/get_it.dart'; // getIt 사용
 
+import '../../../recipe/domain/repositories/recipe_repository.dart';
+import '../../../recipe/presentation/bloc/recipe_list_bloc.dart';
+import '../../../recipe/presentation/bloc/recipe_list_event.dart';
 import '../../domain/usecases/sign_in_with_google_usecase.dart';
 import '../../domain/usecases/sign_out_usecase.dart';
 import '../../domain/repositories/auth_repository.dart'; // authStateChanges 스트림 구독용
@@ -74,6 +77,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       await _signOutUseCase(); // UseCase 실행
       emit(AuthUnauthenticated()); // 로그아웃 상태 발행
+
+      // getIt을 통해 RecipeListBloc 인스턴스를 가져와 이벤트 추가
+      getIt<RecipeListBloc>().add(ClearRecipes());
+
+      // Firestore 로컬 캐시 지우기 (이전 사용자 데이터 잔재 방지)
+      await getIt<RecipeRepository>().clearCache(); // <-- getIt에서 RecipeRepository 가져와 호출
     } catch (e) {
       emit(AuthError('로그아웃 실패: ${e.toString()}')); // 에러 상태 발행
     }

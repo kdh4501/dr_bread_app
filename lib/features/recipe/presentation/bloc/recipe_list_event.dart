@@ -22,3 +22,5 @@ class ApplyFilter extends RecipeListEvent { // 레시피 필터링 이벤트
   @override
   List<Object?> get props => [filterOptions];
 }
+
+class ClearRecipes extends RecipeListEvent {} // 초기화

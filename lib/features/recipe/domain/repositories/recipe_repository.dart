@@ -27,6 +27,9 @@ abstract class RecipeRepository {
   // 특정 레시피를 삭제하는 메서드 정의 (삭제할 레시피의 UID를 받음)
   Future<void> deleteRecipe(String uid); // 삭제는 보통 void 반환
 
+  // 레시피 목록을 초기화
+  Future<void> clearCache();
+
 // TODO: 필요에 따라 추가적인 데이터 작업 메서드 정의 (예: 좋아요/찜하기 상태 변경, 카테고리 목록 가져오기)
 
 }
