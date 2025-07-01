@@ -13,9 +13,13 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authBloc = context.read<AuthBloc>();
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     // Bloc의 상태를 직접 listen하지 않고, BlocProvider.of를 통해 Bloc 인스턴스에 접근
     // 또는 context.read<AuthBloc>() 사용
-    final authBloc = context.read<AuthBloc>(); // Bloc 인스턴스 가져오기
 
     return Scaffold(
       body: Center(
@@ -24,38 +28,44 @@ class LoginScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/bbangbaksa_logo.png', width: 100, height: 100), // 로고
-              SizedBox(height: 20),
+              Image.asset('assets/images/bbangbaksa_logo.png', width: 120, height: 120), // 로고
+              SizedBox(height: kSpacingMedium),
               Text(
-                '빵빵박사', // 앱 이름
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                kAppName, // app_constants.dart에서 앱 이름 가져오기
+                style: textTheme.headlineLarge?.copyWith(color: colorScheme.primary), // 앱 이름 강조
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: kSpacingSmall),
               Text(
                 '나만의 제빵/제과 레시피를 기록하고 관리하세요!', // 슬로건
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                style: textTheme.bodyLarge?.copyWith(color: colorScheme.onBackground),
               ),
-              SizedBox(height: 40),
+              SizedBox(height: kSpacingLarge),
+
               BlocConsumer<AuthBloc, AuthState>(
                 listener: (context, state) {
                   if (state is AuthError) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(state.message),
-                        backgroundColor: Theme.of(context).colorScheme.error,
+                        backgroundColor: colorScheme.error,
+                        duration: const Duration(seconds: 3),
                       ),
                     );
                   }
                 },
                 builder: (context, state) {
                   if (state is AuthLoading) {
-                    return CircularProgressIndicator(color: Theme.of(context).colorScheme.primary);
+                    return CircularProgressIndicator(color: colorScheme.primary);
                   }
-                  return GoogleSignInButton(
+                  return ElevatedButton(
                     onPressed: () {
-                      context.read<AuthBloc>().add(AuthSignInWithGoogle());
+                      authBloc.add(AuthSignInWithGoogle());
                     },
+                    child: Text('Google 계정으로 시작하기', style: textTheme.labelLarge), // labelLarge 스타일
+                    style: ElevatedButton.styleFrom( // ElevatedButtonThemeData 자동 적용
+                      minimumSize: const Size(double.infinity, 50), // 버튼 최소 크기
+                    ),
                   );
                 },
               )

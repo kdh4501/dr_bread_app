@@ -38,6 +38,7 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
 
   late final RecipeListBloc _recipeListBloc; // RecipeListBloc 인스턴스
   late final RecipeActionBloc _recipeActionBloc; // AddRecipeScreen으로 전달용
+  late final AuthBloc _authBloc;
 
   Timer? _debounce;
 
@@ -47,6 +48,7 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
     super.initState();
     _recipeListBloc = context.read<RecipeListBloc>();
     _recipeActionBloc = context.read<RecipeActionBloc>(); // AddRecipeScreen으로 전달용
+    _authBloc = context.read<AuthBloc>();
 
     // 검색어 입력 변경 감지
     _searchController.addListener(_onSearchChanged);
@@ -58,6 +60,31 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
     _searchController.dispose();
     _debounce?.cancel();
     super.dispose();
+  }
+
+  Future<void> _signOut() async {
+    // 사용자에게 로그아웃 확인 다이얼로그 띄우기
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('로그아웃'), // DialogTheme 자동 적용
+        content: const Text('정말로 로그아웃 하시겠습니까?'),
+        actions: [
+          TextButton( // TextButtonTheme 자동 적용
+            onPressed: () => Navigator.of(context).pop(false), // 취소
+            child: const Text('취소'),
+          ),
+          TextButton( // TextButtonTheme 자동 적용
+            onPressed: () => Navigator.of(context).pop(true), // 확인
+            child: const Text('로그아웃'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) { // 사용자가 확인을 눌렀을 때
+      _authBloc.add(AuthSignOut()); // AuthBloc에 로그아웃 이벤트 추가
+    }
   }
 
   // 검색어 변경 시 호출될 함수
@@ -142,12 +169,10 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
               },
             ),
           // TODO: 로그아웃 버튼 (옵션)
-          // IconButton(
-          //   icon: const Icon(Icons.logout),
-          //   onPressed: () {
-          //     Provider.of<AuthProvider>(context, listen: false).signOut();
-          //   },
-          // ),
+          IconButton(
+            icon: const Icon(Icons.logout), // 로그아웃 아이콘
+            onPressed: _signOut, // 로그아웃 함수 연결
+          ),
         ],
       ),
       body: BlocConsumer<RecipeListBloc, RecipeListState>(
