@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dr_bread_app/features/recipe/domain/usecases/add_recipe_usecase.dart';
 import 'package:dr_bread_app/features/recipe/domain/usecases/get_recipe_detail_usecase.dart';
 import 'package:dr_bread_app/features/recipe/domain/usecases/update_recipe_usecase.dart';
@@ -37,6 +39,8 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
   late final RecipeListBloc _recipeListBloc; // RecipeListBloc 인스턴스
   late final RecipeActionBloc _recipeActionBloc; // AddRecipeScreen으로 전달용
 
+  Timer? _debounce;
+
   // 화면 처음 로딩 시 레시피 데이터 가져오기 호출
   @override
   void initState() {
@@ -52,14 +56,19 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
   void dispose() {
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
   // 검색어 변경 시 호출될 함수
   void _onSearchChanged() {
     // 검색어 입력 시 일정 시간 지연 후 검색 이벤트 추가 (debounce)
-    // TODO: debounce 구현 (예: Timer 사용)
-    _recipeListBloc.add(SearchRecipes(_searchController.text));
+    if (_debounce?.isActive ?? false) _debounce!.cancel(); // 이전 타이머가 있다면 취소
+
+    _debounce = Timer(const Duration(milliseconds: 500), () { // 500ms(0.5초) 지연 후 검색 실행
+      // 타이머가 만료되면 실제 검색 이벤트 추가
+      _recipeListBloc.add(SearchRecipes(_searchController.text));
+    });
   }
 
   // 필터링 다이얼로그 표시
