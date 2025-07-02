@@ -262,72 +262,76 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
           ),
         ],
       ),
-      body: BlocConsumer<RecipeActionBloc, RecipeActionState>(
-        listener: (context, state) {
-          if (state is RecipeActionSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message ?? '작업이 성공적으로 완료되었습니다!'),
-                  backgroundColor: colorScheme.primary,
-                  duration: const Duration(seconds: 2),
-                )
-            );
-            Navigator.pop(context, true); // 이전 화면으
-          } else if (state is RecipeActionFailure){
-            showDialog(
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: BlocConsumer<RecipeActionBloc, RecipeActionState>(
+          listener: (context, state) {
+            if (state is RecipeActionSuccess) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.message ?? '작업이 성공적으로 완료되었습니다!'),
+                    backgroundColor: colorScheme.primary,
+                    duration: const Duration(seconds: 2),
+                  )
+              );
+              Navigator.pop(context, true); // 이전 화면으
+            } else if (state is RecipeActionFailure){
+              showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
                   title: const Text('작업 실패'),
                   content: Text(state.message),
                   actions: [
                     TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: const Text('확인'),
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('확인'),
                     )
                   ],
                 ),
-            );
-          }
-        },
-        builder: (context, state) {
-          // 로딩 중이면 로딩 스피너 표시 (전체 화면 로딩)
-          if (state is RecipeActionLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+              );
+            }
+          },
+          builder: (context, state) {
+            // 로딩 중이면 로딩 스피너 표시 (전체 화면 로딩)
+            if (state is RecipeActionLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          return Padding(
-            padding: const EdgeInsets.all(kDefaultPadding),
-            child: Form( // 폼 위젯 사용
-              key: _formKey, // 폼 키 연결
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              child: ListView( // 스크롤 가능하도록 ListView 사용
-                children: [
-                  // 레시피 사진 선택/미리보기
-                  GestureDetector( // 이미지를 탭하면 선택
-                    onTap: _pickImage,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: colorScheme.surfaceVariant,
-                        border: Border.all(
-                          color: colorScheme.outline,
-                          width: 1.0,
-                        ),
-                        borderRadius: BorderRadius.circular(kSpacingMedium)
-                      ),
-                      child: Container(
-                        width: double.infinity,
-                        height: 200,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            _selectedImage != null // 새 이미지 선택 시 미리보기
-                                ? ClipRRect( // 이미지 자체도 모서리 둥글게 (Card 모서리 둥글기와 일치 또는 살짝 작게)
-                              borderRadius: BorderRadius.circular(kSpacingMedium - 1.0), // Card 테마 둥글기 값 가져와서 적용
-                              child: Image.file(File(_selectedImage!.path), fit: BoxFit.cover),
-                            )
-                            // 편집 모드일 때 기존 이미지 미리보기 (새 이미지 선택 안 했을 경우)
-                            : _initialImageUrl != null && _initialImageUrl!.isNotEmpty // 기존 이미지 URL이 있다면
-                              ? ClipRRect( // 이미지 자체도 모서리 둥글게
+            return Padding(
+              padding: const EdgeInsets.all(kDefaultPadding),
+              child: Form( // 폼 위젯 사용
+                key: _formKey, // 폼 키 연결
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: ListView( // 스크롤 가능하도록 ListView 사용
+                  children: [
+                    // 레시피 사진 선택/미리보기
+                    GestureDetector( // 이미지를 탭하면 선택
+                        onTap: _pickImage,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                              color: colorScheme.surfaceVariant,
+                              border: Border.all(
+                                color: colorScheme.outline,
+                                width: 1.0,
+                              ),
+                              borderRadius: BorderRadius.circular(kSpacingMedium)
+                          ),
+                          child: Container(
+                            width: double.infinity,
+                            height: 200,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                _selectedImage != null // 새 이미지 선택 시 미리보기
+                                    ? ClipRRect( // 이미지 자체도 모서리 둥글게 (Card 모서리 둥글기와 일치 또는 살짝 작게)
+                                  borderRadius: BorderRadius.circular(kSpacingMedium - 1.0), // Card 테마 둥글기 값 가져와서 적용
+                                  child: Image.file(File(_selectedImage!.path), fit: BoxFit.cover),
+                                )
+                                // 편집 모드일 때 기존 이미지 미리보기 (새 이미지 선택 안 했을 경우)
+                                    : _initialImageUrl != null && _initialImageUrl!.isNotEmpty // 기존 이미지 URL이 있다면
+                                    ? ClipRRect( // 이미지 자체도 모서리 둥글게
                                   borderRadius: BorderRadius.circular(kSpacingMedium - 1.0), // Card 테마 둥글기 값 가져와서 적용
                                   child: CachedNetworkImage( // 기존 이미지 미리보기
                                     imageUrl: _initialImageUrl!,
@@ -336,158 +340,159 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                                     errorWidget: (context, url, error) => const Icon(Icons.error_outline),
                                   ),
                                 )
-                                : Column( // 사진 없을 때 기본 UI
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.camera_alt, size: kIconSizeLarge, color: colorScheme.onSurfaceVariant),
-                                SizedBox(height: kSpacingSmall),
-                                Text(
-                                    '사진 추가',
-                                    style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant)
+                                    : Column( // 사진 없을 때 기본 UI
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.camera_alt, size: kIconSizeLarge, color: colorScheme.onSurfaceVariant),
+                                    SizedBox(height: kSpacingSmall),
+                                    Text(
+                                        '사진 추가',
+                                        style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant)
+                                    ),
+                                  ],
                                 ),
+                                // 이미지 삭제 버튼 추가
+                                if (isEditing && (_selectedImage != null || (_initialImageUrl != null && _initialImageUrl!.isNotEmpty))) // 편집 모드이고 이미지가 있을 때만 표시
+                                  Positioned( // Stack 내에서 위치 지정
+                                    top: kSpacingSmall, // 상단 여백
+                                    right: kSpacingSmall, // 우측 여백
+                                    child: IconButton(
+                                      icon: Icon(Icons.cancel, color: colorScheme.error, size: kIconSizeMedium), // 삭제 아이콘
+                                      onPressed: () {
+                                        setState(() {
+                                          _selectedImage = null; // 새로 선택된 이미지 제거
+                                          _initialImageUrl = null; // 기존 이미지 URL 제거
+                                        });
+                                        // TODO: 사용자에게 이미지 삭제됨을 알리는 스낵바 등 피드백
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text('이미지가 삭제되었습니다.'),
+                                            backgroundColor: colorScheme.primary,
+                                            duration: const Duration(seconds: 1),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
                               ],
                             ),
-                            // 이미지 삭제 버튼 추가
-                            if (isEditing && (_selectedImage != null || (_initialImageUrl != null && _initialImageUrl!.isNotEmpty))) // 편집 모드이고 이미지가 있을 때만 표시
-                              Positioned( // Stack 내에서 위치 지정
-                                top: kSpacingSmall, // 상단 여백
-                                right: kSpacingSmall, // 우측 여백
-                                child: IconButton(
-                                  icon: Icon(Icons.cancel, color: colorScheme.error, size: kIconSizeMedium), // 삭제 아이콘
-                                  onPressed: () {
-                                    setState(() {
-                                      _selectedImage = null; // 새로 선택된 이미지 제거
-                                      _initialImageUrl = null; // 기존 이미지 URL 제거
-                                    });
-                                    // TODO: 사용자에게 이미지 삭제됨을 알리는 스낵바 등 피드백
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('이미지가 삭제되었습니다.'),
-                                        backgroundColor: colorScheme.primary,
-                                        duration: const Duration(seconds: 1),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    )
-                  ),
-                  const SizedBox(height: kSpacingMedium),
-
-                  // 제목 입력 필드
-                  TextFormField(
-                    controller: _titleController,
-                    decoration: const InputDecoration(
-                      labelText: '레시피 제목',
+                          ),
+                        )
                     ),
-                    validator: (value) { // 유효성 검사 (비어있으면 에러 메시지)
-                      if (value == null || value.isEmpty) {
-                        return '레시피 제목은 비어있을 수 없습니다.';
-                      }
-                      if (value.length < 2) {
-                        return '제목은 최소 2글자 이상이어야 합니다.';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: kSpacingMedium),
+                    const SizedBox(height: kSpacingMedium),
 
-                  // TODO: 카테고리 선택 DropdownButton 또는 다른 필드들 추가
+                    // 제목 입력 필드
+                    TextFormField(
+                      controller: _titleController,
+                      decoration: const InputDecoration(
+                        labelText: '레시피 제목',
+                      ),
+                      validator: (value) { // 유효성 검사 (비어있으면 에러 메시지)
+                        if (value == null || value.isEmpty) {
+                          return '레시피 제목은 비어있을 수 없습니다.';
+                        }
+                        if (value.length < 2) {
+                          return '제목은 최소 2글자 이상이어야 합니다.';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: kSpacingMedium),
 
-                  // 재료 입력 섹션 (동적 목록)
-                  Text('재료', style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface)),
-                  const SizedBox(height: kSpacingSmall),
-                  ListView.builder( // 재료 입력 필드 목록
-                    shrinkWrap: true, // ListView를 Column 안에 넣을 때 필요
-                    physics: NeverScrollableScrollPhysics(), // 내부 스크롤 방지
-                    itemCount: _ingredientControllers.length,
-                    itemBuilder: (context, index) {
-                      // 각 재료 입력 필드 및 삭제 버튼
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              controller: _ingredientControllers[index],
-                              decoration: InputDecoration(
-                                hintText: '예: 강력분 200g', // 힌트 텍스트
+                    // TODO: 카테고리 선택 DropdownButton 또는 다른 필드들 추가
+
+                    // 재료 입력 섹션 (동적 목록)
+                    Text('재료', style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface)),
+                    const SizedBox(height: kSpacingSmall),
+                    ListView.builder( // 재료 입력 필드 목록
+                      shrinkWrap: true, // ListView를 Column 안에 넣을 때 필요
+                      physics: NeverScrollableScrollPhysics(), // 내부 스크롤 방지
+                      itemCount: _ingredientControllers.length,
+                      itemBuilder: (context, index) {
+                        // 각 재료 입력 필드 및 삭제 버튼
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _ingredientControllers[index],
+                                decoration: InputDecoration(
+                                  hintText: '예: 강력분 200g', // 힌트 텍스트
+                                ),
+                                validator: (value) { return null; },
                               ),
-                              validator: (value) { return null; },
                             ),
-                          ),
-                          // 삭제 버튼
-                          IconButton(
-                            icon: const Icon(Icons.remove_circle_outline),
-                            color: colorScheme.error,
-                            onPressed: () => _removeIngredientField(index),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                  // 재료 추가 버튼
-                  TextButton(
-                    onPressed: _addIngredientField,
-                    child: const Text('+ 재료 추가'),
-                  ),
-                  const SizedBox(height: kSpacingMedium),
+                            // 삭제 버튼
+                            IconButton(
+                              icon: const Icon(Icons.remove_circle_outline),
+                              color: colorScheme.error,
+                              onPressed: () => _removeIngredientField(index),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    // 재료 추가 버튼
+                    TextButton(
+                      onPressed: _addIngredientField,
+                      child: const Text('+ 재료 추가'),
+                    ),
+                    const SizedBox(height: kSpacingMedium),
 
-                  // 조리법 입력 섹션 (동적 목록)
-                  Text('조리법', style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface)),
-                  const SizedBox(height: kSpacingSmall),
-                  ListView.builder( // 조리법 단계 입력 필드 목록
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: _stepControllers.length,
-                    itemBuilder: (context, index) {
-                      // 각 단계 입력 필드 및 삭제 버튼
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // 단계 번호 표시
-                          Padding(
-                            padding: const EdgeInsets.only(top: 15.0, right: kSpacingSmall),
-                            child: Text('${index + 1}.', style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface)),
-                          ),
-                          Expanded(
-                            child: TextFormField(
-                              controller: _stepControllers[index],
-                              decoration: const InputDecoration(
-                                hintText: '예: 오븐을 180도로 예열합니다.',
+                    // 조리법 입력 섹션 (동적 목록)
+                    Text('조리법', style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface)),
+                    const SizedBox(height: kSpacingSmall),
+                    ListView.builder( // 조리법 단계 입력 필드 목록
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: _stepControllers.length,
+                      itemBuilder: (context, index) {
+                        // 각 단계 입력 필드 및 삭제 버튼
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // 단계 번호 표시
+                            Padding(
+                              padding: const EdgeInsets.only(top: 15.0, right: kSpacingSmall),
+                              child: Text('${index + 1}.', style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface)),
+                            ),
+                            Expanded(
+                              child: TextFormField(
+                                controller: _stepControllers[index],
+                                decoration: const InputDecoration(
+                                  hintText: '예: 오븐을 180도로 예열합니다.',
+                                ),
+                                maxLines: null, // 여러 줄 입력 가능
+                                keyboardType: TextInputType.multiline, // 멀티라인 키보드
+                                validator: (value) { return null; },
                               ),
-                              maxLines: null, // 여러 줄 입력 가능
-                              keyboardType: TextInputType.multiline, // 멀티라인 키보드
-                              validator: (value) { return null; },
                             ),
-                          ),
-                          // 삭제 버튼
-                          IconButton(
-                            icon: const Icon(Icons.remove_circle_outline),
-                            color: colorScheme.error,
-                            onPressed: () => _removeStepField(index),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                  // 조리법 단계 추가 버튼
-                  TextButton(
-                    onPressed: _addStepField,
-                    child: const Text('+ 조리 단계 추가'),
-                  ),
+                            // 삭제 버튼
+                            IconButton(
+                              icon: const Icon(Icons.remove_circle_outline),
+                              color: colorScheme.error,
+                              onPressed: () => _removeStepField(index),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    // 조리법 단계 추가 버튼
+                    TextButton(
+                      onPressed: _addStepField,
+                      child: const Text('+ 조리 단계 추가'),
+                    ),
 
-                  // TODO: 필요한 온도, 시간, 팁 등 추가 입력 필드
+                    // TODO: 필요한 온도, 시간, 팁 등 추가 입력 필드
 
-                  const SizedBox(height: kSpacingExtraLarge), // 하단 여백
-                ],
+                    const SizedBox(height: kSpacingExtraLarge), // 하단 여백
+                  ],
+                ),
               ),
-            ),
-          );
-        },
-      )
+            );
+          },
+        ),
+      ),
     );
   }
 }
