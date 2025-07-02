@@ -118,7 +118,7 @@ ThemeData bbangbaksaTheme = ThemeData(
   ),
   inputDecorationTheme: InputDecorationTheme( // 입력 필드 테마
     filled: true, // 배경색 채우기 활성화
-    fillColor: const Color(0xFFFFA07A),
+    fillColor: Colors.white,
     hoverColor: Colors.grey.shade100, // 호버 시 색상
     focusColor: const Color(0xFFFFA07A), // 포커스 시 색상
     border: OutlineInputBorder( // 기본 테두리 스타일

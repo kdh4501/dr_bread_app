@@ -131,6 +131,8 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
               hintText: '레시피 검색...',
               hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onPrimary.withOpacity(0.7)),
               border: InputBorder.none, // 테두리 없음
+              filled: true, // 배경색 채우기 활성화
+              fillColor: colorScheme.primary,
               prefixIcon: Icon(Icons.search, color: colorScheme.onPrimary),
               suffixIcon: _searchController.text.isNotEmpty
                   ? IconButton(
