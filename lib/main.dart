@@ -40,61 +40,76 @@ import 'firebase_options.dart';
 final getIt = GetIt.instance;
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
 
-  await FirebaseAppCheck.instance.activate(
-    androidProvider: kReleaseMode
-        ? AndroidProvider.playIntegrity
-        : AndroidProvider.debug,
-    appleProvider: kReleaseMode
-        ? AppleProvider.deviceCheck
-        : AppleProvider.debug,
-  );
+    await FirebaseAppCheck.instance.activate(
+      androidProvider: kReleaseMode
+          ? AndroidProvider.playIntegrity
+          : AndroidProvider.debug,
+      appleProvider: kReleaseMode
+          ? AppleProvider.deviceCheck
+          : AppleProvider.debug,
+    );
 
-  Bloc.observer = SimpleBlocObserver();
+    Bloc.observer = SimpleBlocObserver();
 
-  // get_it 의존성 등록 함수
-  setupDependencies();
+    // get_it 의존성 등록 함수
+    setupDependencies();
 
-  runApp(
-    // MultiProvider를 사용하여 여러 Provider 설정 가능
-    MultiProvider(
-      providers: [
-        // AuthProvider 설정: UseCase 주입
-        // ChangeNotifierProvider<AuthenticationProvider>(
-        //   create: (_) => AuthenticationProvider(getIt<SignInWithGoogleUseCase>(), getIt<SignOutUseCase>()),
-        //   // lazy: false, // 앱 시작 시 바로 AuthProvider 생성 (선택 사항)
-        // ),
-        // AuthProvider 대신 AuthBloc을 BlocProvider로 등록
-        BlocProvider<AuthBloc>(
-          create: (_) => AuthBloc(
-            getIt<SignInWithGoogleUseCase>(),
-            getIt<SignOutUseCase>(),
-            getIt<AuthRepository>(), // AuthRepository 주입
+    runApp(
+      // MultiProvider를 사용하여 여러 Provider 설정 가능
+      MultiProvider(
+        providers: [
+          // AuthProvider 설정: UseCase 주입
+          // ChangeNotifierProvider<AuthenticationProvider>(
+          //   create: (_) => AuthenticationProvider(getIt<SignInWithGoogleUseCase>(), getIt<SignOutUseCase>()),
+          //   // lazy: false, // 앱 시작 시 바로 AuthProvider 생성 (선택 사항)
+          // ),
+          // AuthProvider 대신 AuthBloc을 BlocProvider로 등록
+          BlocProvider<AuthBloc>(
+            create: (_) => AuthBloc(
+              getIt<SignInWithGoogleUseCase>(),
+              getIt<SignOutUseCase>(),
+              getIt<AuthRepository>(), // AuthRepository 주입
+            ),
+          ),
+          // RecipeListProvider 대신 RecipeListBloc을 BlocProvider로 등록
+          BlocProvider<RecipeListBloc>(
+            create: (_) => RecipeListBloc(getIt<GetRecipesUseCase>(), getIt<SearchRecipesUseCase>()),
+          ),
+          BlocProvider<RecipeActionBloc>(
+            create: (_) => RecipeActionBloc(
+              getIt<AddRecipeUseCase>(),
+              getIt<UpdateRecipeUseCase>(),
+              getIt<DeleteRecipeUseCase>(),
+              getIt<UploadImageUseCase>(),
+            ),
+          ),
+          BlocProvider<RecipeDetailBloc>(
+            create: (_) => RecipeDetailBloc(getIt<GetRecipeDetailUseCase>()),
+          ),
+        ],
+        child: const MyApp(), // 하위 위젯들이 Provider에 접근 가능
+      ),
+    );
+  } catch (e, stackTrace) {
+    debugPrint('Fatal Error during app initialization: $e');
+    debugPrint('StackTrace: $stackTrace');
+    // 에러 발생 시 앱이 꺼지지 않고 에러 화면을 보여주도록 할 수도 있음
+    runApp(
+      MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: Text('앱 초기화 중 심각한 오류 발생: $e\n자세한 내용은 로그를 확인해주세요.'),
           ),
         ),
-        // RecipeListProvider 대신 RecipeListBloc을 BlocProvider로 등록
-        BlocProvider<RecipeListBloc>(
-          create: (_) => RecipeListBloc(getIt<GetRecipesUseCase>(), getIt<SearchRecipesUseCase>()),
-        ),
-        BlocProvider<RecipeActionBloc>(
-          create: (_) => RecipeActionBloc(
-            getIt<AddRecipeUseCase>(),
-            getIt<UpdateRecipeUseCase>(),
-            getIt<DeleteRecipeUseCase>(),
-            getIt<UploadImageUseCase>(),
-          ),
-        ),
-        BlocProvider<RecipeDetailBloc>(
-          create: (_) => RecipeDetailBloc(getIt<GetRecipeDetailUseCase>()),
-        ),
-      ],
-      child: const MyApp(), // 하위 위젯들이 Provider에 접근 가능
-    ),
-  );
+      ),
+    );
+  }
 }
 
 Future<void> setupDependencies() async {
