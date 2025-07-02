@@ -117,8 +117,8 @@ ThemeData bbangbaksaTheme = ThemeData(
     actionsIconTheme: const IconThemeData(color: Colors.white, size: 24), // 액션 아이콘 색상/크기
   ),
   inputDecorationTheme: InputDecorationTheme( // 입력 필드 테마
-    filled: true, // 배경색 채우기
-    fillColor: Colors.white, // 배경색 (흰색)
+    filled: true, // 배경색 채우기 활성화
+    fillColor: const Color(0xFFFFA07A),
     hoverColor: Colors.grey.shade100, // 호버 시 색상
     focusColor: const Color(0xFFFFA07A), // 포커스 시 색상
     border: OutlineInputBorder( // 기본 테두리 스타일
