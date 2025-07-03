@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_contstants.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../domain/entities/recipe.dart'; // RecipeEntity 임포트
 import 'package:cached_network_image/cached_network_image.dart'; // 이미지 캐싱 패키지 (선택, 권장)
 

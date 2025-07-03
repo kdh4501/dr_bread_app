@@ -5,7 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'dart:io'; // File 클래스 사용
 import 'package:firebase_auth/firebase_auth.dart'; // 사용자 UID 가져오기용
 
-import '../../../../core/constants/app_contstants.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../domain/entities/recipe.dart';
 import '../../domain/usecases/add_recipe_usecase.dart';
 import '../../domain/usecases/update_recipe_usecase.dart';

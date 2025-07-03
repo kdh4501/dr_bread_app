@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:provider/provider.dart'; // Provider 사용
-import '../../../../core/constants/app_contstants.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../../../main.dart';
 import '../../domain/entities/recipe.dart';
 // TODO: 레시피 추가 UseCase 임포트

@@ -2,7 +2,7 @@ import 'package:dr_bread_app/features/recipe/presentation/bloc/recipe_detail_sta
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart'; // Provider 사용
-import '../../../../core/constants/app_contstants.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../domain/entities/recipe.dart'; // RecipeEntity 임포트
 // TODO: 상세 레시피 조회 UseCase 임포트
 import '../../domain/usecases/add_recipe_usecase.dart';
