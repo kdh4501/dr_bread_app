@@ -34,6 +34,9 @@ class RecipeActionBloc extends Bloc<RecipeActionEvent, RecipeActionState> {
     on<DeleteRecipeRequested>(_onDeleteRecipeRequested);
   }
 
+  /*
+    RecipeEntity에 category와 tags가 포함되어 전달되므로, 별도의 추가 로직은 필요 없음
+   */
   // 레시피 추가 요청 이벤트 핸들러
   Future<void> _onAddRecipeRequested(AddRecipeRequested event, Emitter<RecipeActionState> emit) async {
     emit(RecipeActionLoading()); // 로딩 상태 발행
