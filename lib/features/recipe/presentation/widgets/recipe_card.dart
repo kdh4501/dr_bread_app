@@ -95,6 +95,34 @@ class RecipeCard extends StatelessWidget {
                   Text('${recipe.steps?.length ?? 0}단계', style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface)),
                 ],
               ),
+
+              // 카테고리 표시
+              if (recipe.category != null && recipe.category!.isNotEmpty)
+                Row(
+                  children: [
+                    Icon(Icons.category, size: kIconSizeMedium, color: colorScheme.onSurfaceVariant),
+                    const SizedBox(width: kSpacingExtraSmall),
+                    Text(recipe.category!, style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface)),
+                  ],
+                ),
+
+              // 태그 표시
+              if (recipe.tags != null && recipe.category!.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: kSpacingSmall),
+                  child: Wrap(  // 태그들이 자동으로 줄 바꿈되도록 Wrap 사용
+                    spacing: kSpacingSmall, // 태그 간 가로 간격
+                    runSpacing: kSpacingSmall,  // 태그 간 세로 간격
+                    children: recipe.tags!
+                    .map((tag) => Chip(
+                      label: Text(tag, style: textTheme.labelSmall?.copyWith(color: colorScheme.onSecondaryContainer)), // labelSmall 스타일
+                      backgroundColor: colorScheme.secondaryContainer, // 보조 색상 컨테이너
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(kSpacingSmall)), // Chip 모서리 둥글게
+                      padding: const EdgeInsets.symmetric(horizontal: kSpacingSmall, vertical: kSpacingExtraSmall), // Chip 내부 패딩
+                    ))
+                      .toList(),
+                  ),
+                ),
               // TODO: 레시피 간단 설명, 작성자, 날짜 등 추가 정보 표시 (RecipeEntity에 있다면)
               // if (recipe.description != null && recipe.description!.isNotEmpty)
               //   Padding(
