@@ -245,7 +245,8 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
         ingredients: ingredients, // TODO: Entity에 ingredients 필드 추가 필요
         steps: steps, // TODO: Entity에 steps 필드 추가 필요
         // photoUrl: isEditing ? _recipe!.photoUrl : null, // (편집 모드일 때 기존 이미지 URL 유지) <- Bloc으로 이동
-        // TODO: 카테고리, 작성자 (현재 로그인 사용자 UID), 생성/수정 날짜 등 추가 필드
+        category: _selectedCategory,
+        tags: _tags.isNotEmpty ? _tags : null, // 태그가 없으면 null
       );
 
       // Bloc에 이벤트 추가
@@ -426,7 +427,70 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                     ),
                     const SizedBox(height: kSpacingMedium),
 
-                    // TODO: 카테고리 선택 DropdownButton 또는 다른 필드들 추가
+                    // 카테고리 선택 DropdownButton 필드
+                    Text('카테고리', style: textTheme.titleMedium),
+                    const SizedBox(height: kSpacingSmall),
+                    DropdownButtonFormField<String>(
+                      value: _selectedCategory,
+                      hint: const Text('카테고리 선택'),
+                      decoration: const InputDecoration(
+                        // InputDecorationTheme 자동 적용
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12), // 패딩 조정
+                      ),
+                      items: ['빵', '쿠키', '케이크', '음료', '기타'] // 예시 카테고리 목록
+                          .map((category) => DropdownMenuItem(
+                        value: category,
+                        child: Text(category, style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface)),
+                      ))
+                          .toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedCategory = value;
+                        });
+                      },
+                      validator: (value) { // 카테고리 필수 검사
+                        if (value == null || value.isEmpty) {
+                          return '카테고리를 선택해주세요.';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: kSpacingMedium),
+
+                    // 태그 입력 필드
+                    Text('태그', style: textTheme.titleMedium),
+                    const SizedBox(height: kSpacingSmall),
+                    TextFormField(
+                      controller: _tagController,
+                      decoration: InputDecoration(
+                        hintText: '예: 노오븐, 비건, 초콜릿 (쉼표로 구분)',
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.add),
+                          onPressed: () {
+                            _addTag(_tagController.text);
+                          },
+                        ),
+                      ),
+                      onFieldSubmitted: (value) { // 엔터 키 입력 시 태그 추가
+                        _addTag(value);
+                      },
+                    ),
+                    const SizedBox(height: kSpacingSmall),
+                    // 입력된 태그들을 Chip으로 표시
+                    Wrap( // 태그들이 자동으로 줄 바꿈되도록 Wrap 사용
+                      spacing: kSpacingSmall, // 태그 간 가로 간격
+                      runSpacing: kSpacingSmall, // 태그 간 세로 간격
+                      children: _tags
+                          .map((tag) => Chip(
+                        label: Text(tag, style: textTheme.labelMedium?.copyWith(color: colorScheme.onSecondaryContainer)),
+                        backgroundColor: colorScheme.secondaryContainer, // 테마 보조 색상 컨테이너
+                        deleteIcon: Icon(Icons.cancel, size: kIconSizeMedium, color: colorScheme.onSecondaryContainer),
+                        onDeleted: () => _removeTag(tag),
+                        // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(kSpacingSmall)), // Chip 모서리 둥글게
+                      ))
+                          .toList(),
+                    ),
+                    const SizedBox(height: kSpacingMedium),
 
                     // 재료 입력 섹션 (동적 목록)
                     Text('재료', style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface)),
