@@ -43,6 +43,9 @@ class AddRecipeScreen extends StatefulWidget {
 class _AddRecipeScreenState extends State<AddRecipeScreen> {
   // 폼 입력을 관리하기 위한 GlobalKey
   final _formKey = GlobalKey<FormState>();
+  String? _selectedCategory;
+  late TextEditingController _tagController;
+  final List<String> _tags = [];
 
   // 입력 필드 컨트롤러들
   late TextEditingController _titleController;
@@ -73,7 +76,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
 
     // 컨트롤러 초기화
     _titleController = TextEditingController();
-    // TODO: 다른 컨트롤러 초기화
+    _tagController = TextEditingController();
 
     // 편집 모드인 경우 기존 데이터로 필드 초기화
     if (isEditing) {
@@ -81,6 +84,11 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
       _initialImageUrl = _recipe!.photoUrl;
 
       _titleController.text = _recipe!.title;
+
+      _selectedCategory = _recipe!.category; // <-- 기존 카테고리 채우기
+      if (_recipe!.tags != null) {
+        _tags.addAll(_recipe!.tags!); // <-- 기존 태그 채우기
+      }
 
       // 재료 목록 채우기
       if(_recipe!.ingredients != null && _recipe!.ingredients!.isNotEmpty) {
@@ -119,7 +127,26 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
     for (var controller in _stepControllers) {
       controller.dispose();
     }
+    _tagController.dispose();
     super.dispose();
+  }
+
+  // 태그 추가 함수
+  void _addTag(String tag) {
+    final trimmedTag = tag.trim();
+    if (trimmedTag.isNotEmpty && !_tags.contains(trimmedTag)) {
+      setState(() {
+        _tags.add(trimmedTag);
+      });
+    }
+    _tagController.clear(); // 입력 필드 비우기
+  }
+
+  // 태그 삭제 함수
+  void _removeTag(String tag) {
+    setState(() {
+      _tags.remove(tag);
+    });
   }
 
   // 이미지 선택 함수 (갤러리 또는 카메라)
