@@ -12,6 +12,7 @@ class RecipeEntity {
   final String? authorUid; // 작성자 UID (어떤 사용자가 작성했는지)
   final DateTime? createdAt; // 생성 날짜/시간
   final DateTime? updatedAt; // 마지막 수정 날짜/시간
+  final List<String>? tags; // 태그 관리 기능 구현
 
   // 생성자: 필요한 필드를 받아서 초기화
   RecipeEntity({
@@ -25,6 +26,7 @@ class RecipeEntity {
     this.authorUid,
     this.createdAt,
     this.updatedAt,
+    this.tags,
   });
 
   // TODO: 필요에 따라 데이터 복사(copyWith), toString, equality 연산자(==, hashCode) 등 추가 가능
@@ -41,6 +43,7 @@ class RecipeEntity {
     String? authorUid,
     DateTime? createdAt,
     DateTime? updatedAt,
+    List<String>? tags,
   }) {
     return RecipeEntity(
       uid: uid ?? this.uid,
@@ -53,6 +56,21 @@ class RecipeEntity {
       authorUid: authorUid ?? this.authorUid,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      tags: tags ?? this.tags,
     );
   }
+
+  @override
+  List<Object?> get props => [
+    uid,
+    title,
+    ingredients,
+    steps,
+    photoUrl,
+    authorUid,
+    createdAt,
+    updatedAt,
+    category,
+    tags,
+  ];
 }
