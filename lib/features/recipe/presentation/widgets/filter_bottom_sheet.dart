@@ -23,6 +23,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   String? _selectedCategory;
   String? _selectedDifficulty;
   int? _selectedMaxPrepTime;
+  bool _showMyRecipesOnly = false;
 
   @override
   void initState() {
@@ -30,6 +31,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     _selectedCategory = widget.currentFilter.category;
     _selectedDifficulty = widget.currentFilter.difficulty;
     _selectedMaxPrepTime = widget.currentFilter.maxPrepTimeMinutes;
+    _showMyRecipesOnly = widget.currentFilter.showMyRecipesOnly ?? false;
   }
 
   @override
@@ -39,18 +41,18 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     final textTheme = theme.textTheme;
 
     return Padding(
-      padding: const EdgeInsets.all(kDefaultPadding), // <-- 상수 사용!
+      padding: const EdgeInsets.all(kDefaultPadding),
       child: ListView(
         // mainAxisSize: MainAxisSize.min,
         shrinkWrap: true,
         // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('필터', style: textTheme.headlineSmall?.copyWith(color: colorScheme.onSurface)),
-          const SizedBox(height: kSpacingMedium), // <-- 상수 사용!
+          const SizedBox(height: kSpacingMedium),
 
           // 카테고리 필터
           Text('카테고리', style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface)),
-          const SizedBox(height: kSpacingSmall), // <-- 상수 사용!
+          const SizedBox(height: kSpacingSmall),
           DropdownButtonFormField<String>(
             value: _selectedCategory,
             hint: Text('카테고리 선택', style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface.withOpacity(0.6))),
@@ -84,15 +86,15 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               });
             },
             decoration: InputDecoration(
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(kSpacingSmall)), // <-- 상수 사용!
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(kSpacingSmall)),
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             ),
           ),
-          const SizedBox(height: kSpacingMedium), // <-- 상수 사용!
+          const SizedBox(height: kSpacingMedium),
 
           // 최대 준비 시간 필터 (Slider 또는 Dropdown)
           Text('최대 준비 시간 (분)', style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface)),
-          const SizedBox(height: kSpacingSmall), // <-- 상수 사용!
+          const SizedBox(height: kSpacingSmall),
           Slider(
             value: (_selectedMaxPrepTime ?? 0).toDouble(),
             min: 0,
@@ -109,7 +111,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             thumbColor: colorScheme.primary, // primary 색상
           ),
           Text('선택된 시간: ${_selectedMaxPrepTime ?? '무제한'}분', style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface)), // bodyMedium 스타일, onSurface 색상
-          const SizedBox(height: kSpacingLarge), // <-- 상수 사용!
+          const SizedBox(height: kSpacingLarge),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -124,7 +126,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 },
                 child: const Text('초기화'),
               ),
-              const SizedBox(width: kSpacingMedium), // <-- 상수 사용!
+              const SizedBox(width: kSpacingMedium),
               ElevatedButton(
                 onPressed: () {
                   widget.onApplyFilter(RecipeFilterOptions(
@@ -137,7 +139,19 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               ),
             ],
           ),
-          const SizedBox(height: kSpacingMedium), // <-- 상수 사용!
+          const SizedBox(height: kSpacingMedium),
+
+          SwitchListTile(
+            title: Text('내 레시피만 보기', style: textTheme.titleMedium),
+            value: _showMyRecipesOnly,
+            onChanged: (value) {
+              setState(() {
+                _showMyRecipesOnly = value;
+              });
+            },
+            activeColor: colorScheme.primary, // 테마 색상
+          ),
+          const SizedBox(height: kSpacingLarge),
         ],
       ),
     );
