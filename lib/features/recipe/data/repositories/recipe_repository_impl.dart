@@ -25,9 +25,12 @@ class RecipeRepositoryImpl implements RecipeRepository {
     // DataSource에서 Firestore 데이터 스트림(Stream<List<RecipeModel>>)을 가져온 후,
     // 각 RecipeModel을 RecipeEntity로 변환하여 새로운 스트림(Stream<List<RecipeEntity>>)으로 반환
     // map 함수를 사용하여 Stream의 각 이벤트(List<RecipeModel>)를 변환
-    return dataSource.getRecipeStream(filterOptions: filterOptions).map((listRecipeModel) {
+    return dataSource.getRecipeStream(filterOptions: filterOptions).map((snapshot) {
       // List<RecipeModel> -> List<RecipeEntity> 변환 로직
-      return listRecipeModel.map((model) => model.toEntity()).toList();
+      return snapshot.docs.map((doc) {
+        // doc.data()는 Map<String, dynamic> 반환, doc.id는 문서 ID 반환
+        return RecipeModel.fromJson(doc.data() as Map<String, dynamic>, doc.id).toEntity();
+      }).toList();
     });
   }
 
