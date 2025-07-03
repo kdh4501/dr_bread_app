@@ -5,6 +5,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore SDK 사용
+import 'package:dr_bread_app/features/recipe/presentation/bloc/recipe_list_state.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import '../models/recipe_model.dart'; // RecipeModel 임포트
 
@@ -36,16 +38,23 @@ class FirestoreRecipeDataSource { // 인터페이스 없이 바로 구현 시
 
   // 모든 레시피 목록을 실시간 스트림으로 가져오는 메서드
   // Stream<List<RecipeModel>> 반환
-  Stream<List<RecipeModel>> getRecipeStream() {
-    // Firestore 컬렉션에서 스냅샷 스트림 가져오기
-    // TODO: 정렬 순서, 필터링 등 필요한 쿼리 추가
-    return _recipesCollection.snapshots().map((snapshot) {
-      // 스냅샷의 각 문서(DocumentSnapshot)를 RecipeModel 객체로 변환하여 List로 만듦
-      return snapshot.docs.map((doc) {
-        // doc.data()는 Map<String, dynamic> 반환, doc.id는 문서 ID 반환
-        return RecipeModel.fromJson(doc.data() as Map<String, dynamic>, doc.id);
-      }).toList();
-    });
+  Stream<QuerySnapshot> getRecipeStream({RecipeFilterOptions? filterOptions}) {
+    Query query = _recipesCollection;
+
+    // '내 레시피만 보기' 필터 적용
+    if (filterOptions?.showMyRecipesOnly == true) {
+      final currentUserUid = FirebaseAuth.instance.currentUser?.uid; // 현재 사용자 UID 가져오기
+      if (currentUserUid != null) {
+        query = query.where('authorUid', isEqualTo: currentUserUid); // authorUid 필터 추가
+      } else {
+        // 사용자가 로그인되어 있지 않는데 '내 레시피만 보기' 요청 시 빈 스트림 반환
+        // 주의: 이 경우 Firestore 쿼리 권한 에러가 발생할 수 있으므로, 해당 규칙을 허용하거나
+        // UI에서 로그인되지 않은 사용자에게는 '내 레시피만 보기' 옵션을 비활성화해야 함.
+        debugPrint('FirestoreRecipeDataSource: User not logged in, but trying to show only my recipes. Returning empty stream.');
+        return _firestore.collection('empty_recipes').snapshots(); // 빈 QuerySnapshot 반환
+      }
+    }
+    return query.snapshots();
   }
 
   // 특정 레시피 상세 정보를 ID로 가져오는 메서드

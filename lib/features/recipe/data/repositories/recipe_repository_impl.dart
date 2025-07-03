@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import '../../domain/entities/recipe.dart'; // Domain Entity 임포트
 import '../../domain/repositories/recipe_repository.dart'; // Domain Repository Interface 임포트
+import '../../presentation/bloc/recipe_list_state.dart';
 import '../datasources/firestore_recipe_data_source.dart'; // FirestoreDataSource 임포트
 import '../models/recipe_model.dart'; // RecipeModel 임포트 (Entity <-> Model 변환용)
 
@@ -20,11 +21,11 @@ class RecipeRepositoryImpl implements RecipeRepository {
   // Domain Layer에서 정의한 getRecipes() 메서드 구현
   // Stream<List<RecipeEntity>> 반환
   @override
-  Stream<List<RecipeEntity>> getRecipes() {
+  Stream<List<RecipeEntity>> getRecipes({RecipeFilterOptions? filterOptions}) {
     // DataSource에서 Firestore 데이터 스트림(Stream<List<RecipeModel>>)을 가져온 후,
     // 각 RecipeModel을 RecipeEntity로 변환하여 새로운 스트림(Stream<List<RecipeEntity>>)으로 반환
     // map 함수를 사용하여 Stream의 각 이벤트(List<RecipeModel>)를 변환
-    return dataSource.getRecipeStream().map((listRecipeModel) {
+    return dataSource.getRecipeStream(filterOptions: filterOptions).map((listRecipeModel) {
       // List<RecipeModel> -> List<RecipeEntity> 변환 로직
       return listRecipeModel.map((model) => model.toEntity()).toList();
     });
