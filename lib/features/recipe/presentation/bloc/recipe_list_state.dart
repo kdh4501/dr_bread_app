@@ -7,22 +7,26 @@ class RecipeFilterOptions extends Equatable {
   final String? category;
   final String? difficulty; // 예시: '쉬움', '보통', '어려움'
   final int? maxPrepTimeMinutes; // 예시: 최대 준비 시간 (분)
+  final bool? showMyRecipesOnly;
 
   const RecipeFilterOptions({
     this.category,
     this.difficulty,
     this.maxPrepTimeMinutes,
+    this.showMyRecipesOnly,
   });
 
   RecipeFilterOptions copyWith({
     String? category,
     String? difficulty,
     int? maxPrepTimeMinutes,
+    bool? showMyRecipesOnly,
   }) {
     return RecipeFilterOptions(
       category: category ?? this.category,
       difficulty: difficulty ?? this.difficulty,
       maxPrepTimeMinutes: maxPrepTimeMinutes ?? this.maxPrepTimeMinutes,
+      showMyRecipesOnly: showMyRecipesOnly ?? this.showMyRecipesOnly,
     );
   }
 
