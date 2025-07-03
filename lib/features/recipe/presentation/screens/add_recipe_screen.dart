@@ -432,8 +432,11 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                     const SizedBox(height: kSpacingSmall),
                     DropdownButtonFormField<String>(
                       value: _selectedCategory,
-                      hint: const Text('카테고리 선택'),
-                      decoration: const InputDecoration(
+                      hint: Text(
+                        '카테고리 선택',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
+                      ),
+                      decoration: InputDecoration(
                         // InputDecorationTheme 자동 적용
                         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12), // 패딩 조정
                       ),
