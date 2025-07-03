@@ -226,7 +226,34 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                       style: textTheme.titleLarge?.copyWith(color: colorScheme.onSurface), // 테마에서 제목 스타일 가져오기
                     ),
 
-                    // TODO: 간단 설명, 카테고리, 소요 시간 등 추가 정보 표시
+                    // 카테고리 표시
+                    if (recipe.category != null && recipe.category!.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: kSpacingSmall),
+                        child: Row(
+                          children: [
+                            Icon(Icons.category, size: kIconSizeMedium, color: colorScheme.onSurfaceVariant),
+                            const SizedBox(width: kSpacingSmall),
+                            Text('카테고리: ${recipe.category}', style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface)),
+                          ],
+                        ),
+                      ),
+
+                    // 태그 표시
+                    if (recipe.tags != null && recipe.tags!.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: kSpacingMedium),
+                        child: Wrap(
+                          spacing: kSpacingSmall,
+                          runSpacing: kSpacingSmall,
+                          children: recipe.tags!
+                              .map((tag) => Chip(
+                            label: Text(tag, style: textTheme.labelMedium?.copyWith(color: colorScheme.onSecondaryContainer)),
+                            backgroundColor: colorScheme.secondaryContainer,
+                          ))
+                              .toList(),
+                        ),
+                      ),
                     const SizedBox(height: kSpacingLarge),
 
                     // 재료 목록 섹션
