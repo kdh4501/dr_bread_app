@@ -10,6 +10,7 @@ import 'package:provider/provider.dart'; // Provider 사용
 import '../../../../core/constants/app_constants.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_event.dart';
+import '../../../auth/presentation/screens/profile_screen.dart';
 import '../../domain/usecases/delete_recipe_usecase.dart';
 import '../../domain/usecases/upload_image_usecase.dart';
 import '../bloc/recipe_action_bloc.dart';
@@ -172,10 +173,15 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
                 );
               },
             ),
-          // TODO: 로그아웃 버튼 (옵션)
+          // 프로필 아이콘 버튼 추가
           IconButton(
-            icon: const Icon(Icons.logout), // 로그아웃 아이콘
-            onPressed: _signOut, // 로그아웃 함수 연결
+            icon: const Icon(Icons.person), // 프로필 아이콘
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfileScreen()),
+              );
+            },
           ),
         ],
       ),
