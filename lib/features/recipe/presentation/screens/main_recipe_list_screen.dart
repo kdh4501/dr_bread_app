@@ -186,17 +186,21 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
           ),
         ],
       ),
-      body: BlocConsumer<RecipeListBloc, RecipeListState>(
-        listener: (context, state) {
-          if (state is RecipeListError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.errorMessage ?? '오류가 발생했습니다.'),
-                backgroundColor: colorScheme.error,
-              ),
-            );
-          }
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
         },
+        child: BlocConsumer<RecipeListBloc, RecipeListState>(
+          listener: (context, state) {
+            if (state is RecipeListError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.errorMessage ?? '오류가 발생했습니다.'),
+                  backgroundColor: colorScheme.error,
+                ),
+              );
+            }
+          },
           builder: (context, state) {
             // 로딩 중 상태 처리
             if (state is RecipeListLoading) {
@@ -306,6 +310,7 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
               },
             );
           },
+        ),
       ),
 
       // 새 레시피 추가 FAB

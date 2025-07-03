@@ -291,7 +291,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
         ],
       ),
       body: GestureDetector(
-        onTap: () {
+        onTap: () { // 입력창 외의 영역 터치 시 키보드 내려가게
           FocusScope.of(context).unfocus();
         },
         child: BlocConsumer<RecipeActionBloc, RecipeActionState>(
