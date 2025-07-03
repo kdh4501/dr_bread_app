@@ -33,7 +33,7 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
 
     try {
       // UseCase에서 스트림 가져오기 (필터링 조건이 있다면 UseCase에서 처리)
-      final recipeStream = _getRecipesUseCase(); // 현재는 필터링 없는 전체 목록 스트림
+      final recipeStream = _getRecipesUseCase(filterOptions: state.filterOptions); // 필터 옵션 전달
 
       await emit.onEach(
           recipeStream,
@@ -68,21 +68,24 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
 
     emit(RecipeListLoading(recipes: state.recipes, searchQuery: state.searchQuery, filterOptions: event.filterOptions)); // 로딩 상태 발행
 
-    try {
-      // TODO: FilterRecipesUseCase를 사용하거나, GetRecipesUseCase에 필터링 조건을 전달
-      // 현재 GetRecipesUseCase는 필터링 조건을 받지 않으므로, Repository/UseCase 수정 필요
-      // 또는 클라이언트 측에서 필터링 (비효율적)
-      final filteredResults = await _getRecipesUseCase().first; // 일단 전체 가져와서 클라이언트에서 필터링
-      final finalResults = filteredResults.where((recipe) {
-        bool matchesCategory = event.filterOptions.category == null || (recipe.category != null && recipe.category == event.filterOptions.category);
-        // TODO: 다른 필터링 조건 추가 (난이도, 시간 등)
-        return matchesCategory;
-      }).toList();
+    // try {
+    //   // TODO: FilterRecipesUseCase를 사용하거나, GetRecipesUseCase에 필터링 조건을 전달
+    //   // 현재 GetRecipesUseCase는 필터링 조건을 받지 않으므로, Repository/UseCase 수정 필요
+    //   // 또는 클라이언트 측에서 필터링 (비효율적)
+    //   final filteredResults = await _getRecipesUseCase().first; // 일단 전체 가져와서 클라이언트에서 필터링
+    //   final finalResults = filteredResults.where((recipe) {
+    //     bool matchesCategory = event.filterOptions.category == null || (recipe.category != null && recipe.category == event.filterOptions.category);
+    //     // TODO: 다른 필터링 조건 추가 (난이도, 시간 등)
+    //     return matchesCategory;
+    //   }).toList();
+    //
+    //   emit(RecipeListLoaded(recipes: finalResults, searchQuery: state.searchQuery, filterOptions: event.filterOptions)); // 필터링 결과로 상태 업데이트
+    // } catch (e) {
+    //   emit(RecipeListError(errorMessage: '레시피 필터링에 실패했습니다: $e', recipes: state.recipes, searchQuery: state.searchQuery, filterOptions: event.filterOptions));
+    // }
 
-      emit(RecipeListLoaded(recipes: finalResults, searchQuery: state.searchQuery, filterOptions: event.filterOptions)); // 필터링 결과로 상태 업데이트
-    } catch (e) {
-      emit(RecipeListError(errorMessage: '레시피 필터링에 실패했습니다: $e', recipes: state.recipes, searchQuery: state.searchQuery, filterOptions: event.filterOptions));
-    }
+    emit(RecipeListLoading(recipes: state.recipes, searchQuery: state.searchQuery, filterOptions: event.filterOptions));
+    add(FetchRecipes()); // 필터 옵션이 변경되었으니 다시 fetchRecipes 이벤트 호출
   }
 
   Future<void> _onClearRecipes(ClearRecipes event, Emitter<RecipeListState> emit) async {
