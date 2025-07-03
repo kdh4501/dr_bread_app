@@ -9,7 +9,10 @@ abstract class RecipeActionEvent extends Equatable {
   @override
   List<Object?> get props => [];
 }
-
+/*
+  RecipeEntity 자체에 category와 tags가 포함되므로, 이벤트에 별도로 추가할 필요는 없음
+  RecipeEntity를 이벤트에 전달하면 됨
+ */
 class AddRecipeRequested extends RecipeActionEvent { // 레시피 추가 요청 이벤트
   final RecipeEntity recipe;
   final XFile? imageFile; // 이미지 파일 (선택 사항)
