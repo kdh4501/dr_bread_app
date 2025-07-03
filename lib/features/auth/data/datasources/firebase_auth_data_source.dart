@@ -6,6 +6,7 @@ abstract class AuthDataSource {
   Stream<User?> get authStateChanges; // Firebase User 타입 반환
   Future<UserCredential> signInWithGoogle(); // Firebase UserCredential 반환
   Future<void> signOut();
+  User? get currentUser;
 }
 
 /*
@@ -16,6 +17,9 @@ class FirebaseAuthDataSource implements AuthDataSource {
   final GoogleSignIn _googleSignIn;
 
   FirebaseAuthDataSource(this._firebaseAuth, this._googleSignIn);
+
+  @override
+  User? get currentUser => _firebaseAuth.currentUser;
 
   @override
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges(); // Firebase SDK 직접 사용

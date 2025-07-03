@@ -58,9 +58,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<UserEntity?> getCurrentUser() async {
-    // DataSource를 통해 Firebase Auth에서 현재 사용자 정보 가져옴
-    final firebaseUser = await dataSource.authStateChanges.first; // Stream의 첫 번째 데이터 가져오기
-    // 또는 FirebaseAuth.instance.currentUser 사용 (DataSource에서)
+    final firebaseUser = await dataSource.currentUser;
 
     if (firebaseUser == null) {
       return null;
