@@ -105,6 +105,7 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
   void _showFilterDialog(RecipeFilterOptions currentFilter) {
     showModalBottomSheet( // 트렌디함을 반영하여 BottomSheet 사용
       context: context,
+      isScrollControlled: true, // BottomSheet가 화면 전체를 차지할 수 있도록
       builder: (context) {
         return FilterBottomSheet(
           currentFilter: currentFilter,
