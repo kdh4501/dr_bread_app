@@ -294,17 +294,33 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
                     // 레시피 카드 클릭 시 상세 화면으로 이동
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) {
-
-                            // RecipeDetailScreen에서 필요한 RecipeDetailBloc을 BlocProvider로 제공
-                            return BlocProvider<RecipeDetailBloc>(
-                              create: (context) => RecipeDetailBloc(getIt<GetRecipeDetailUseCase>()),
-                              child: RecipeDetailScreen(recipeId: recipe.uid),
-                            );
-                          }
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) => BlocProvider<RecipeDetailBloc>(
+                          create: (context) => RecipeDetailBloc(getIt<GetRecipeDetailUseCase>()),
+                          child: RecipeDetailScreen(recipeId: recipe.uid),
+                        ),
+                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                          // 페이드 인 애니메이션 적용
+                          return FadeTransition(
+                            opacity: animation,
+                            child: child,
+                          );
+                          // 또는 SlideTransition (아래에서 위로)
+                          return SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(0.0, 1.0), // 아래에서 시작
+                              end: Offset.zero,
+                            ).animate(animation),
+                            child: child,
+                          );
+                        },
+                        transitionDuration: const Duration(milliseconds: 300), // 전환 지속 시간
                       ),
-                    );
+                    ).then((result) {
+                      if (result == true) {
+                        _recipeListBloc.add(FetchRecipes());
+                      }
+                    });
                   },
                 );
               },
