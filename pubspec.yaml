@@ -50,6 +50,7 @@ dependencies:
   image_cropper: ^9.1.0
   flutter_image_compress: ^2.4.0
   google_fonts: ^6.2.1
+  flutter_native_splash: ^2.4.6
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +72,22 @@ flutter_launcher_icons: # <-- 이 부분도 추가!
   remove_alpha_ios: true # iOS 아이콘의 알파 채널(투명도) 제거 (권장)
   # adaptive_icon_background: "#ffffff" # Android Adaptive Icon 배경색 (선택 사항)
   # adaptive_icon_foreground: "assets/images/app_icon_foreground.png" # Android Adaptive Icon 전경 이미지 (선택 사항)
+
+flutter_native_splash: # <-- 이 부분도 추가!
+  color: "#FFFACD" # 스플래시 스크린 배경색 (LemonChiffon의 Hex 코드)
+  # background_image: "assets/images/splash_background.png" # 배경 이미지 (선택 사항)
+  image: "assets/images/splash_logo.png" # 중앙에 표시될 로고 이미지 (선택 사항)
+  # branding: "assets/images/branding_logo.png" # 하단에 표시될 브랜딩 이미지 (선택 사항)
+  # color_dark: "#042a49" # 다크 모드 배경색 (선택 사항)
+  # background_image_dark: "assets/images/splash_background_dark.png" # 다크 모드 배경 이미지 (선택 사항)
+  # image_dark: "assets/images/splash_logo_dark.png" # 다크 모드 로고 이미지 (선택 사항)
+  android: true # Android 스플래시 스크린 생성 활성화
+  ios: true # iOS 스플래시 스크린 생성 활성화
+  web: false # 웹 스플래시 스크린 생성 비활성화 (선택 사항)
+  # android_gravity: center # Android 이미지 정렬 (선택 사항: center, top, bottom 등)
+  # ios_content_mode: center # iOS 이미지 정렬 (선택 사항: center, scaleAspectFit 등)
+  # fill: true # 이미지가 화면을 채우도록 할지 (선택 사항)
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

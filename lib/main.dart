@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
@@ -40,6 +41,10 @@ import 'firebase_options.dart';
 final getIt = GetIt.instance;
 
 void main() async {
+  // 스플래시 스크린 유지 시작
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
   try {
     WidgetsFlutterBinding.ensureInitialized();
     await Firebase.initializeApp(
@@ -59,7 +64,8 @@ void main() async {
 
     // get_it 의존성 등록 함수
     setupDependencies();
-
+    // 앱 초기화 완료 후 스플래시 스크린 제거
+    FlutterNativeSplash.remove();
     runApp(
       // MultiProvider를 사용하여 여러 Provider 설정 가능
       MultiProvider(
