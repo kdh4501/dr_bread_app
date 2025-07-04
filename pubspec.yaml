@@ -61,6 +61,16 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter_launcher_icons: # <-- 이 부분도 추가!
+  android: "launcher_icon" # Android 아이콘 이름
+  ios: true # iOS 아이콘 생성 활성화
+  image_path: "assets/images/app_icon.png" # 준비한 아이콘 이미지 경로
+  min_sdk_android: 21 # Android 최소 SDK 버전 (프로젝트의 minSdkVersion과 일치)
+  remove_alpha_ios: true # iOS 아이콘의 알파 채널(투명도) 제거 (권장)
+  # adaptive_icon_background: "#ffffff" # Android Adaptive Icon 배경색 (선택 사항)
+  # adaptive_icon_foreground: "assets/images/app_icon_foreground.png" # Android Adaptive Icon 전경 이미지 (선택 사항)
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

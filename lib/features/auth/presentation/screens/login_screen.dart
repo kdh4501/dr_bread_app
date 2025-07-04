@@ -28,7 +28,7 @@ class LoginScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/bbangbaksa_logo.png', width: 120, height: 120), // 로고
+              Image.asset('assets/images/app_icon.png', width: 120, height: 120), // 로고
               SizedBox(height: kSpacingMedium),
               Text(
                 kAppName, // app_constants.dart에서 앱 이름 가져오기
