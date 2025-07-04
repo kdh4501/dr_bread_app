@@ -485,11 +485,9 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                       runSpacing: kSpacingSmall, // 태그 간 세로 간격
                       children: _tags
                           .map((tag) => Chip(
-                        label: Text(tag, style: textTheme.labelMedium?.copyWith(color: colorScheme.onSecondaryContainer)),
-                        backgroundColor: colorScheme.secondaryContainer, // 테마 보조 색상 컨테이너
-                        deleteIcon: Icon(Icons.cancel, size: kIconSizeMedium, color: colorScheme.onSecondaryContainer),
+                        label: Text(tag),
+                        deleteIcon: Icon(Icons.cancel),
                         onDeleted: () => _removeTag(tag),
-                        // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(kSpacingSmall)), // Chip 모서리 둥글게
                       ))
                           .toList(),
                     ),

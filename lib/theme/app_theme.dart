@@ -146,6 +146,29 @@ ThemeData bbangbaksaTheme = ThemeData(
     labelStyle: GoogleFonts.nanumGothic(fontSize: 14, color: Colors.grey.shade700), // 라벨 텍스트 스타일
     errorStyle: GoogleFonts.nanumGothic(fontSize: 12, color: Colors.redAccent), // 에러 텍스트 스타일
   ),
+
+  // SliderThemeData 추가
+  sliderTheme: SliderThemeData(
+    activeTrackColor: const Color(0xFFFFA07A), // 활성 트랙 색상 (primary)
+    inactiveTrackColor: const Color(0xFFFFA07A).withOpacity(0.3), // 비활성 트랙 색상
+    thumbColor: const Color(0xFFFFA07A), // 엄지(thumb) 색상
+    overlayColor: const Color(0xFFFFA07A).withOpacity(0.2), // 오버레이 색상
+    valueIndicatorColor: const Color(0xFF36454F), // 값 표시기 배경색 (Charcoal)
+    valueIndicatorTextStyle: GoogleFonts.nanumGothic(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold), // 값 표시기 텍스트 스타일
+  ),
+
+  // ChipThemeData 추가
+  chipTheme: ChipThemeData(
+    backgroundColor: const Color(0xFFE0F7FA), // secondaryContainer (PaleGreen의 밝은 버전)
+    labelStyle: GoogleFonts.nanumGothic(fontSize: 12, color: const Color(0xFF003333)), // onSecondaryContainer
+    deleteIconColor: const Color(0xFF003333), // onSecondaryContainer
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)), // 모서리 둥글게
+    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0), // 내부 패딩
+    selectedColor: const Color(0xFF98FB98), // 선택됐을 때 색상 (secondary)
+    secondaryLabelStyle: GoogleFonts.nanumGothic(fontSize: 12, color: const Color(0xFF36454F)), // 선택됐을 때 라벨 스타일
+    secondarySelectedColor: const Color(0xFF98FB98), // 선택됐을 때 보조 색상
+  ),
+
   iconTheme: const IconThemeData(color: Color(0xFF36454F), size: 24), // 기본 아이콘 색상/크기
   // TODO: DialogTheme, BottomSheetTheme, SnackBarTheme 등 추가
   dialogTheme: DialogTheme( // 다이얼로그 테마

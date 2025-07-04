@@ -115,10 +115,7 @@ class RecipeCard extends StatelessWidget {
                     runSpacing: kSpacingSmall,  // 태그 간 세로 간격
                     children: recipe.tags!
                     .map((tag) => Chip(
-                      label: Text(tag, style: textTheme.labelSmall?.copyWith(color: colorScheme.onSecondaryContainer)), // labelSmall 스타일
-                      backgroundColor: colorScheme.secondaryContainer, // 보조 색상 컨테이너
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(kSpacingSmall)), // Chip 모서리 둥글게
-                      padding: const EdgeInsets.symmetric(horizontal: kSpacingSmall, vertical: kSpacingExtraSmall), // Chip 내부 패딩
+                      label: Text(tag),
                     ))
                       .toList(),
                   ),

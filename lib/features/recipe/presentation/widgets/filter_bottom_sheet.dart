@@ -106,9 +106,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 _selectedMaxPrepTime = value.toInt();
               });
             },
-            activeColor: colorScheme.primary, // primary 색상
-            inactiveColor: colorScheme.primary.withOpacity(0.3), // primary 색상
-            thumbColor: colorScheme.primary, // primary 색상
           ),
           Text('선택된 시간: ${_selectedMaxPrepTime ?? '무제한'}분', style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface)), // bodyMedium 스타일, onSurface 색상
           const SizedBox(height: kSpacingLarge),
