@@ -19,6 +19,7 @@ import '../bloc/recipe_list_bloc.dart';
 import '../bloc/recipe_list_event.dart';
 import '../bloc/recipe_list_state.dart';
 import '../providers/recipe_list_provider.dart'; // RecipeListProvider 임포트
+import '../widgets/empty_error_state_widget.dart';
 import '../widgets/filter_bottom_sheet.dart';
 import '../widgets/recipe_card.dart'; // RecipeCard 위젯 임포트
 import 'add_recipe_screen.dart'; // 레시피 추가 화면 임포트
@@ -209,50 +210,38 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
 
             // 에러 상태 처리
             if (state is RecipeListError) {
-              return Center(child: Text(state.errorMessage ?? '레시피를 불러오는데 실패했습니다.')); // 에러 메시지
+              return EmptyErrorStateWidget( // <-- 적용!
+                message: state.errorMessage ?? '레시피를 불러오는데 실패했습니다.',
+                icon: Icons.error_outline,
+                buttonText: '다시 시도',
+                onButtonPressed: () {
+                  context.read<RecipeListBloc>().add(FetchRecipes());
+                },
+                isError: true,
+              );
             }
 
             // 데이터 없음 상태 처리
             if (state.recipes.isEmpty) {
               // 검색어가 있는 상태에서 결과가 없으면 '검색 결과 없음' 메시지
               if (state.searchQuery.isNotEmpty || state.filterOptions != const RecipeFilterOptions()) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.search_off, size: kIconSizeLarge, color: colorScheme.onSurfaceVariant),
-                      const SizedBox(height: kSpacingMedium),
-                      Text(
-                        '검색 결과가 없거나 필터에 해당하는 레시피가 없습니다.', // 메시지 변경
-                        textAlign: TextAlign.center, // 텍스트 중앙 정렬
-                        style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant),
-                      ),
-                      // 필터가 적용된 상태라면 필터 초기화 버튼
-                      if (state.filterOptions != const RecipeFilterOptions())
-                        TextButton(
-                          onPressed: () {
-                            _recipeListBloc.add(ApplyFilter(const RecipeFilterOptions())); // 필터 초기화 이벤트
-                          },
-                          child: const Text('필터 초기화'),
-                        ),
-                    ],
-                  ),
+                return EmptyErrorStateWidget( // <-- 적용!
+                  message: '검색 결과가 없거나 필터에 해당하는 레시피가 없습니다.',
+                  icon: Icons.search_off,
+                  buttonText: (state.filterOptions != const RecipeFilterOptions()) ? '필터 초기화' : null,
+                  onButtonPressed: (state.filterOptions != const RecipeFilterOptions())
+                      ? () {
+                    context.read<RecipeListBloc>().add(ApplyFilter(const RecipeFilterOptions()));
+                  }
+                      : null,
                 );
               } else {
                 // 검색어도 필터도 없는 상태에서 레시피가 없으면 '아직 레시피 없음' 메시지
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.menu_book, size: kIconSizeLarge, color: colorScheme.onSurfaceVariant), // 아이콘 변경
-                      const SizedBox(height: kSpacingMedium),
-                      Text(
-                        '아직 레시피가 없어요!\n아래 + 버튼을 눌러 첫 레시피를 추가해보세요!', // 메시지 유지
-                        textAlign: TextAlign.center,
-                        style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant),
-                      ),
-                    ],
-                  ),
+                return EmptyErrorStateWidget( // <-- 적용!
+                  message: '아직 레시피가 없어요!\n아래 + 버튼을 눌러 첫 레시피를 추가해보세요!',
+                  icon: Icons.menu_book,
+                  // buttonText: '레시피 추가', // + 버튼이 있으므로 필요 없을 수 있음
+                  // onButtonPressed: () { /* FAB와 연결 */ },
                 );
               }
             }

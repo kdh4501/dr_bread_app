@@ -17,6 +17,7 @@ import '../bloc/recipe_action_event.dart';
 import '../bloc/recipe_action_state.dart';
 import '../bloc/recipe_detail_bloc.dart';
 import '../bloc/recipe_detail_event.dart';
+import '../widgets/empty_error_state_widget.dart';
 import 'add_recipe_screen.dart'; // AddRecipeScreen
 // TODO: 이미지 캐싱 패키지 임포트 (RecipeCard와 동일)
 import 'package:cached_network_image/cached_network_image.dart';
@@ -181,7 +182,15 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               }
               // 에러 상태 (상세 정보 로딩 에러)
               if (detailState is RecipeDetailError) {
-                return Center(child: Text(detailState.message));
+                return EmptyErrorStateWidget( // <-- 적용!
+                  message: detailState.message,
+                  icon: Icons.error_outline,
+                  buttonText: '다시 시도',
+                  onButtonPressed: () {
+                    context.read<RecipeDetailBloc>().add(GetRecipeDetail(widget.recipeId));
+                  },
+                  isError: true,
+                );
               }
               // 상세 정보 로딩 완료
               if (detailState is RecipeDetailLoaded) {
@@ -287,7 +296,12 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                 );
               }
               // 초기 상태 또는 알 수 없는 상태 (레시피를 찾을 수 없음)
-              return const Center(child: Text('레시피를 찾을 수 없습니다.'));
+              return EmptyErrorStateWidget( // <-- 적용!
+                message: '레시피를 찾을 수 없습니다.',
+                icon: Icons.search_off, // 또는 Icons.menu_book
+                // buttonText: '목록으로 돌아가기',
+                // onButtonPressed: () { Navigator.pop(context); },
+              );
             },
           );
         },
