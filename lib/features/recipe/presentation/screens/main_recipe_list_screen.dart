@@ -5,6 +5,7 @@ import 'package:dr_bread_app/features/recipe/domain/usecases/get_recipe_detail_u
 import 'package:dr_bread_app/features/recipe/domain/usecases/update_recipe_usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart'; // Provider 사용
 import '../../../../core/constants/app_constants.dart';
@@ -272,48 +273,52 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
             }
 
             // 레시피 목록 표시
-            return ListView.builder(
-              padding: const EdgeInsets.all(kDefaultPadding), // 상수 사용
-              itemCount: state.recipes.length, // 레시피 개수
-              itemBuilder: (context, index) {
-                final recipe = state.recipes[index]; // 해당 인덱스의 레시피 데이터
-                return RecipeCard( // 레시피 카드 위젯 사용
-                  recipe: recipe, // RecipeEntity 객체 전달
-                  onTap: () {
-                    // 레시피 카드 클릭 시 상세 화면으로 이동
-                    Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) => BlocProvider<RecipeDetailBloc>(
-                          create: (context) => RecipeDetailBloc(getIt<GetRecipeDetailUseCase>()),
-                          child: RecipeDetailScreen(recipeId: recipe.uid),
+            return AnimationLimiter(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(kDefaultPadding), // 상수 사용
+                  itemCount: state.recipes.length, // 레시피 개수
+                  itemBuilder: (context, index) {
+                    final recipe = state.recipes[index]; // 해당 인덱스의 레시피 데이터
+                    return AnimationConfiguration.staggeredList(  // 각 항목에 애니메이션 설정
+                        position: index,
+                        duration: const Duration(milliseconds: 375), // 각 항목 애니메이션 지속 시간
+                        child: SlideAnimation(
+                          verticalOffset: 50.0, // 시작 위치 (아래로 50px)
+                          child: FadeInAnimation(
+                            child:RecipeCard( // 레시피 카드 위젯 사용
+                              recipe: recipe, // RecipeEntity 객체 전달
+                              onTap: () {
+                                // 레시피 카드 클릭 시 상세 화면으로 이동
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder: (context, animation, secondaryAnimation) => BlocProvider<RecipeDetailBloc>(
+                                      create: (context) => RecipeDetailBloc(getIt<GetRecipeDetailUseCase>()),
+                                      child: RecipeDetailScreen(recipeId: recipe.uid),
+                                    ),
+                                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                      // 페이드 인 애니메이션 적용
+                                      return FadeTransition(
+                                        opacity: animation,
+                                        child: child,
+                                      );
+                                    },
+                                    transitionDuration: const Duration(milliseconds: 300), // 전환 지속 시간
+                                  ),
+                                ).then((result) {
+                                  if (result == true) {
+                                    _recipeListBloc.add(FetchRecipes());
+                                  }
+                                });
+                              },
+                            ),
+                          ),
                         ),
-                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                          // 페이드 인 애니메이션 적용
-                          return FadeTransition(
-                            opacity: animation,
-                            child: child,
-                          );
-                          // 또는 SlideTransition (아래에서 위로)
-                          return SlideTransition(
-                            position: Tween<Offset>(
-                              begin: const Offset(0.0, 1.0), // 아래에서 시작
-                              end: Offset.zero,
-                            ).animate(animation),
-                            child: child,
-                          );
-                        },
-                        transitionDuration: const Duration(milliseconds: 300), // 전환 지속 시간
-                      ),
-                    ).then((result) {
-                      if (result == true) {
-                        _recipeListBloc.add(FetchRecipes());
-                      }
-                    });
+                    );
                   },
-                );
-              },
+                ),
             );
+
           },
         ),
       ),
