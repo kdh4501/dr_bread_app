@@ -13,6 +13,7 @@ class RecipeEntity {
   final DateTime? createdAt; // 생성 날짜/시간
   final DateTime? updatedAt; // 마지막 수정 날짜/시간
   final List<String>? tags; // 태그 관리 기능 구현
+  final bool? isFavorite; // 즐겨찾기 여부
 
   // 생성자: 필요한 필드를 받아서 초기화
   RecipeEntity({
@@ -27,6 +28,7 @@ class RecipeEntity {
     this.createdAt,
     this.updatedAt,
     this.tags,
+    this.isFavorite,
   });
 
   // TODO: 필요에 따라 데이터 복사(copyWith), toString, equality 연산자(==, hashCode) 등 추가 가능
@@ -44,6 +46,7 @@ class RecipeEntity {
     DateTime? createdAt,
     DateTime? updatedAt,
     List<String>? tags,
+    bool? isFavorite,
   }) {
     return RecipeEntity(
       uid: uid ?? this.uid,
@@ -57,6 +60,7 @@ class RecipeEntity {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       tags: tags ?? this.tags,
+      isFavorite: isFavorite ?? this.isFavorite,
     );
   }
 
@@ -72,5 +76,6 @@ class RecipeEntity {
     updatedAt,
     category,
     tags,
+    isFavorite,
   ];
 }

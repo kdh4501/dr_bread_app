@@ -17,6 +17,7 @@ class RecipeModel { // RecipeEntity 상속 또는 필드 복사
   final Timestamp? createdAt; // Firestore Timestamp
   final Timestamp? updatedAt; // Firestore Timestamp
   final List<String>? tags;
+  final bool? isFavorite;
 
   RecipeModel({
     required this.id,
@@ -30,6 +31,7 @@ class RecipeModel { // RecipeEntity 상속 또는 필드 복사
     this.createdAt,
     this.updatedAt,
     this.tags,
+    this.isFavorite,
   });
 
   // Firestore Map 데이터로부터 RecipeModel 객체 생성 (fromJson)
@@ -46,6 +48,7 @@ class RecipeModel { // RecipeEntity 상속 또는 필드 복사
       createdAt: json['createdAt'] as Timestamp?,
       updatedAt: json['updatedAt'] as Timestamp?,
       tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      isFavorite: json['isFavorite'] as bool?,
     );
   }
 
@@ -62,6 +65,7 @@ class RecipeModel { // RecipeEntity 상속 또는 필드 복사
       'createdAt': createdAt ?? Timestamp.now(), // 생성 시 Timestamp 자동 설정
       'updatedAt': Timestamp.now(), // 업데이트 시 Timestamp 자동 설정
       'tags': tags,
+      'isFavorite': isFavorite,
     };
   }
 
@@ -79,6 +83,7 @@ class RecipeModel { // RecipeEntity 상속 또는 필드 복사
       createdAt: createdAt?.toDate(),
       updatedAt: updatedAt?.toDate(),
       tags: tags,
+      isFavorite: isFavorite,
     );
   }
 
@@ -96,6 +101,7 @@ class RecipeModel { // RecipeEntity 상속 또는 필드 복사
       createdAt: entity.createdAt != null ? Timestamp.fromDate(entity.createdAt!) : null,
       updatedAt: entity.updatedAt != null ? Timestamp.fromDate(entity.updatedAt!) : null,
       tags: entity.tags,
+      isFavorite: entity.isFavorite,
     );
   }
 }
