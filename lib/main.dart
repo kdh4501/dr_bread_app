@@ -93,6 +93,7 @@ void main() async {
               getIt<UpdateRecipeUseCase>(),
               getIt<DeleteRecipeUseCase>(),
               getIt<UploadImageUseCase>(),
+              getIt<RecipeRepository>(),
             ),
           ),
           BlocProvider<RecipeDetailBloc>(
