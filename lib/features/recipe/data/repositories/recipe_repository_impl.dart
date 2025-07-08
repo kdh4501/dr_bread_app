@@ -126,5 +126,10 @@ class RecipeRepositoryImpl implements RecipeRepository {
     await dataSource.clearCache();
   }
 
+  @override
+  Future<void> toggleFavorite(String uid, bool isFavorite) async {
+    await dataSource.updateRecipeField(uid, 'isFavorite', isFavorite);
+  }
+
 // TODO: 필요에 따라 추가적인 데이터 작업 메서드 구현
 }

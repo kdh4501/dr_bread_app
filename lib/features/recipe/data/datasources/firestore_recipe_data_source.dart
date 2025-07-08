@@ -185,5 +185,15 @@ class FirestoreRecipeDataSource { // 인터페이스 없이 바로 구현 시
     debugPrint('Firestore cache cleared.');
   }
 
+  Future<void> updateRecipeField(String uid, String field, dynamic value) async { // 특정 필드 업데이트
+    try {
+      await _recipesCollection.doc(uid).update({field: value});
+      debugPrint('FirestoreRecipeDataSource: Updated field $field for recipe $uid to $value');
+    } catch (e) {
+      debugPrint('FirestoreRecipeDataSource: Failed to update field $field for recipe $uid: $e');
+      rethrow;
+    }
+  }
+
 // TODO: 필요에 따라 이미지 업로드/삭제 등 Storage 관련 메서드 추가 (별도 DataSource로 분리 가능)
 }

@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart'; // 사용자 UID 가져오기
 
 import '../../../../core/constants/app_constants.dart';
 import '../../domain/entities/recipe.dart';
+import '../../domain/repositories/recipe_repository.dart';
 import '../../domain/usecases/add_recipe_usecase.dart';
 import '../../domain/usecases/update_recipe_usecase.dart';
 import '../../domain/usecases/delete_recipe_usecase.dart';
@@ -23,15 +24,19 @@ class RecipeActionBloc extends Bloc<RecipeActionEvent, RecipeActionState> {
   final DeleteRecipeUseCase _deleteRecipeUseCase;
   final UploadImageUseCase _uploadImageUseCase;
 
+  final RecipeRepository _recipeRepository;
+
   RecipeActionBloc(
       this._addRecipeUseCase,
       this._updateRecipeUseCase,
       this._deleteRecipeUseCase,
       this._uploadImageUseCase,
+      this._recipeRepository,
       ) : super(RecipeActionInitial()) {
     on<AddRecipeRequested>(_onAddRecipeRequested);
     on<UpdateRecipeRequested>(_onUpdateRecipeRequested);
     on<DeleteRecipeRequested>(_onDeleteRecipeRequested);
+    on<ToggleFavoriteRequested>(_onToggleFavoriteRequested);
   }
 
   /*
@@ -124,6 +129,17 @@ class RecipeActionBloc extends Bloc<RecipeActionEvent, RecipeActionState> {
       emit(RecipeActionSuccess(message: '레시피가 삭제되었습니다!')); // 성공 상태 발행
     } catch (e) {
       emit(RecipeActionFailure('레시피 삭제 실패: ${e.toString()}')); // 실패 상태 발행
+    }
+  }
+
+  // 즐겨찾기 토글 요청 이벤트 핸들러
+  Future<void> _onToggleFavoriteRequested(ToggleFavoriteRequested event, Emitter<RecipeActionState> emit) async {
+    emit(RecipeActionLoading()); // 로딩 상태 발행
+    try {
+      await _recipeRepository.toggleFavorite(event.uid, !event.isFavorite); // 즐겨찾기 상태 토글하여 업데이트
+      emit(RecipeActionSuccess(message: event.isFavorite ? '즐겨찾기에서 제거되었습니다.' : '즐겨찾기에 추가되었습니다.')); // 성공 메시지 발행
+    } catch (e) {
+      emit(RecipeActionFailure('즐겨찾기 상태 변경 실패: ${e.toString()}')); // 실패 상태 발행
     }
   }
 }
