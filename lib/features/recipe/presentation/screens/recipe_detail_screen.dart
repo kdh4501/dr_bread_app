@@ -141,6 +141,29 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               );
             },
           ),
+
+          // 즐겨찾기 아이콘 버튼 추가
+          BlocBuilder<RecipeDetailBloc, RecipeDetailState>(
+            builder: (context, state) {
+              if (state is RecipeDetailLoaded) {
+                final recipe = state.recipe;
+                final isFavorite = recipe.isFavorite ?? false; // 즐겨찾기 상태
+
+                return IconButton(
+                  icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+                  color: isFavorite ? colorScheme.secondary : colorScheme.onPrimary, // 즐겨찾기 시 색상 변경
+                  onPressed: () {
+                    // Bloc에 ToggleFavoriteRequested 이벤트 추가
+                    _recipeActionBloc.add(ToggleFavoriteRequested(
+                      uid: recipe.uid,
+                      isFavorite: isFavorite, // 현재 상태 전달
+                    ));
+                  },
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
         ],
       ),
       body:  BlocConsumer<RecipeActionBloc, RecipeActionState>(
