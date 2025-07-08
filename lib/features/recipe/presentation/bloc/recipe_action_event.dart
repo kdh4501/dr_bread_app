@@ -44,3 +44,11 @@ class DeleteRecipeRequested extends RecipeActionEvent { // 레시피 삭제 요�
   @override
   List<Object?> get props => [uid, imageUrl];
 }
+
+class ToggleFavoriteRequested extends RecipeActionEvent { // 즐겨찾기 토글 요청 이벤트
+  final String uid;
+  final bool isFavorite; // 현재 즐겨찾기 상태
+  const ToggleFavoriteRequested({required this.uid, required this.isFavorite});
+  @override
+  List<Object?> get props => [uid, isFavorite];
+}
