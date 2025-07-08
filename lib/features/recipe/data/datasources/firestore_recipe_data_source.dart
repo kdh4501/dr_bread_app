@@ -53,6 +53,10 @@ class FirestoreRecipeDataSource { // 인터페이스 없이 바로 구현 시
         debugPrint('FirestoreRecipeDataSource: User not logged in, but trying to show only my recipes. Returning empty stream.');
         return _firestore.collection('empty_recipes').snapshots(); // 빈 QuerySnapshot 반환
       }
+
+      if (filterOptions?.showFavoritesOnly == true) {
+        query = query.where('isFavorite', isEqualTo: true); // isFavorite 필터 추가
+      }
     }
     return query.snapshots();
   }
