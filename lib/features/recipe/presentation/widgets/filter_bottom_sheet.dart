@@ -24,6 +24,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   String? _selectedDifficulty;
   int? _selectedMaxPrepTime;
   bool _showMyRecipesOnly = false;
+  bool _showFavoritesOnly = false;
 
   @override
   void initState() {
@@ -32,6 +33,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     _selectedDifficulty = widget.currentFilter.difficulty;
     _selectedMaxPrepTime = widget.currentFilter.maxPrepTimeMinutes;
     _showMyRecipesOnly = widget.currentFilter.showMyRecipesOnly ?? false;
+    _showFavoritesOnly = widget.currentFilter.showFavoritesOnly ?? false;
   }
 
   @override
@@ -43,9 +45,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     return Padding(
       padding: const EdgeInsets.all(kDefaultPadding),
       child: ListView(
-        // mainAxisSize: MainAxisSize.min,
         shrinkWrap: true,
-        // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('필터', style: textTheme.headlineSmall?.copyWith(color: colorScheme.onSurface)),
           const SizedBox(height: kSpacingMedium),
@@ -65,15 +65,15 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               });
             },
             decoration: InputDecoration(
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(kSpacingSmall)), // <-- 상수 사용!
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(kSpacingSmall)),
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             ),
           ),
-          const SizedBox(height: kSpacingMedium), // <-- 상수 사용!
+          const SizedBox(height: kSpacingMedium),
 
           // 난이도 필터
           Text('난이도', style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface)),
-          const SizedBox(height: kSpacingSmall), // <-- 상수 사용!
+          const SizedBox(height: kSpacingSmall),
           DropdownButtonFormField<String>(
             value: _selectedDifficulty,
             hint: Text('난이도 선택', style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface.withOpacity(0.6))),
@@ -110,6 +110,31 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           Text('선택된 시간: ${_selectedMaxPrepTime ?? '무제한'}분', style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface)), // bodyMedium 스타일, onSurface 색상
           const SizedBox(height: kSpacingLarge),
 
+          SwitchListTile(
+            title: Text('내 레시피만 보기', style: textTheme.titleMedium),
+            value: _showMyRecipesOnly,
+            onChanged: (value) {
+              setState(() {
+                _showMyRecipesOnly = value;
+              });
+            },
+            activeColor: colorScheme.primary, // 테마 색상
+          ),
+          const SizedBox(height: kSpacingLarge),
+
+          // '즐겨찾기만 보기' 스위치 추가
+          SwitchListTile(
+            title: Text('즐겨찾기만 보기', style: textTheme.titleMedium),
+            value: _showFavoritesOnly,
+            onChanged: (value) {
+              setState(() {
+                _showFavoritesOnly = value;
+              });
+            },
+            activeColor: colorScheme.primary,
+          ),
+          const SizedBox(height: kSpacingLarge),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -137,18 +162,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             ],
           ),
           const SizedBox(height: kSpacingMedium),
-
-          SwitchListTile(
-            title: Text('내 레시피만 보기', style: textTheme.titleMedium),
-            value: _showMyRecipesOnly,
-            onChanged: (value) {
-              setState(() {
-                _showMyRecipesOnly = value;
-              });
-            },
-            activeColor: colorScheme.primary, // 테마 색상
-          ),
-          const SizedBox(height: kSpacingLarge),
         ],
       ),
     );
