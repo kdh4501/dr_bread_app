@@ -137,7 +137,7 @@ class RecipeActionBloc extends Bloc<RecipeActionEvent, RecipeActionState> {
     emit(RecipeActionLoading()); // 로딩 상태 발행
     try {
       await _recipeRepository.toggleFavorite(event.uid, !event.isFavorite); // 즐겨찾기 상태 토글하여 업데이트
-      emit(RecipeActionSuccess(message: event.isFavorite ? '즐겨찾기에서 제거되었습니다.' : '즐겨찾기에 추가되었습니다.')); // 성공 메시지 발행
+      emit(RecipeActionSuccess(message: event.isFavorite ? '즐겨찾기에서 제거되었습니다.' : '즐겨찾기에 추가되었습니다.', id: event.uid)); // 성공 메시지 발행
     } catch (e) {
       emit(RecipeActionFailure('즐겨찾기 상태 변경 실패: ${e.toString()}')); // 실패 상태 발행
     }

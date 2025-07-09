@@ -183,6 +183,9 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
             // 삭제 성공 시 이전 화면으로 돌아가기
             if (state.message?.contains('삭제') ?? false) { // 메시지에 '삭제' 포함 여부로 판단 (더 정확한 방법은 상태에 작업 타입 추가)
               Navigator.pop(context, true); // 이전 화면으로 돌아가면서 성공 결과(true) 전달
+            }// 즐겨찾기 토글 성공 시 RecipeDetailBloc에게 데이터 갱신 요청
+            else if (state.id == widget.recipeId) { // 현재 화면의 레시피 ID와 일치할 경우
+              _recipeDetailBloc.add(GetRecipeDetail(widget.recipeId)); // 상세 정보 다시 가져오기
             }
           } else if (state is RecipeActionFailure) {
             showDialog(
