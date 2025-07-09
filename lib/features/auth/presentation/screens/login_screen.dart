@@ -58,14 +58,34 @@ class LoginScreen extends StatelessWidget {
                   if (state is AuthLoading) {
                     return CircularProgressIndicator(color: colorScheme.primary);
                   }
-                  return ElevatedButton(
-                    onPressed: () {
-                      authBloc.add(AuthSignInWithGoogle());
-                    },
-                    child: Text('Google 계정으로 시작하기', style: textTheme.labelLarge), // labelLarge 스타일
-                    style: ElevatedButton.styleFrom( // ElevatedButtonThemeData 자동 적용
-                      minimumSize: const Size(double.infinity, 50), // 버튼 최소 크기
+                  return Container(
+                    width: double.infinity,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12.0), // 버튼 모서리 둥글기 (테마와 일치)
+                      gradient: LinearGradient( // 그라데이션 적용
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          colorScheme.primary, // 시작 색상
+                          colorScheme.secondary, // 끝 색상
+                        ],
+                      ),
                     ),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          authBloc.add(AuthSignInWithGoogle());
+                        },
+                        child: Text('Google 계정으로 시작하기', style: textTheme.labelLarge), // labelLarge 스타일
+                        style: ElevatedButton.styleFrom( // ElevatedButtonThemeData 자동 적용
+                          backgroundColor: Colors.transparent, // 배경을 투명하게
+                          shadowColor: Colors.transparent, // 그림자도 투명하게
+                          foregroundColor: colorScheme.onPrimary, // 텍스트/아이콘 색상 (primary 위에)
+                          textStyle: textTheme.labelLarge, // labelLarge 스타일
+                          padding: EdgeInsets.zero, // Container 패딩을 따르도록 패딩 제거
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), // 모서리 둥글기 (Container와 일치)
+                        ),
+                      ),
                   );
                 },
               )
