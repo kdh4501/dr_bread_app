@@ -1,4 +1,5 @@
 // lib/features/auth/presentation/screens/profile_screen.dart
+import 'package:dr_bread_app/core/widgets/background_gradient.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -31,7 +32,8 @@ class ProfileScreen extends StatelessWidget {
           appBar: AppBar(
             title: Text('내 프로필', style: theme.appBarTheme.titleTextStyle),
           ),
-          body: Center(
+          body: BackgroundGradient(
+            child: Center(
             child: SingleChildScrollView( // 내용이 길어질 경우 스크롤 가능
               padding: const EdgeInsets.all(kDefaultPadding),
               child: Column(
@@ -114,6 +116,7 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
             ),
+          ),
           ),
         );
       },

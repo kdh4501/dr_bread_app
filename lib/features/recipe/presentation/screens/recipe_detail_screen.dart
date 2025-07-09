@@ -1,3 +1,4 @@
+import 'package:dr_bread_app/core/widgets/background_gradient.dart';
 import 'package:dr_bread_app/features/recipe/presentation/bloc/recipe_detail_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -91,7 +92,8 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
     final textTheme = theme.textTheme;
 
     return Scaffold(
-      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
         // 제목은 RecipeDetailBloc의 상태에서 가져옴
         title: BlocBuilder<RecipeDetailBloc, RecipeDetailState>(
           builder: (context, state) {
@@ -166,7 +168,8 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
           ),
         ],
       ),
-      body:  BlocConsumer<RecipeActionBloc, RecipeActionState>(
+      body: BackgroundGradient(
+        child: BlocConsumer<RecipeActionBloc, RecipeActionState>(
         listener: (context, state) {
           if (state is RecipeActionSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -196,7 +199,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
             );
           }
         },
-        builder: (context, actionState) {
+          builder: (context, actionState) {
           return BlocBuilder<RecipeDetailBloc, RecipeDetailState>(
             builder: (context, detailState) {
               // 상세 정보 로딩 중
@@ -242,7 +245,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                         ),
                       )
                     else
-                      // 사진 없을 때 Placeholder
+                    // 사진 없을 때 Placeholder
                       Container(
                         width: double.infinity,
                         height: 250,
@@ -327,8 +330,9 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               );
             },
           );
-        },
-      )
+          },
+        ),
+      ),
     );
   }
 }

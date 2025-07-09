@@ -1,3 +1,4 @@
+import 'package:dr_bread_app/core/widgets/background_gradient.dart';
 import 'package:flutter/material.dart';
 // TODO: 필요시 Future.delayed 등을 위한 dart:async 임포트
 
@@ -44,8 +45,9 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return const Scaffold(
       // TODO: 스플래시 스크린 UI 디자인
-      body: Center(
-        child: Column(
+      body: BackgroundGradient(
+        child: Center(
+          child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // 네 앱 로고 이미지
@@ -57,6 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
           ],
         ),
       ),
+      )
     );
   }
 }

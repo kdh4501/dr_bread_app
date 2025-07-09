@@ -1,4 +1,5 @@
 import 'package:dr_bread_app/core/constants/app_constants.dart';
+import 'package:dr_bread_app/core/widgets/background_gradient.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart'; // Provider 사용 예시
@@ -22,10 +23,11 @@ class LoginScreen extends StatelessWidget {
     // 또는 context.read<AuthBloc>() 사용
 
     return Scaffold(
-      body: Center(
-        child: Padding(
+      body: BackgroundGradient(
+        child: Center(
+          child: Padding(
           padding: const EdgeInsets.all(kDefaultPadding),
-          child: Column(
+            child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset('assets/images/app_icon.png', width: 120, height: 120), // 로고
@@ -72,25 +74,26 @@ class LoginScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          authBloc.add(AuthSignInWithGoogle());
-                        },
-                        child: Text('Google 계정으로 시작하기', style: textTheme.labelLarge), // labelLarge 스타일
-                        style: ElevatedButton.styleFrom( // ElevatedButtonThemeData 자동 적용
-                          backgroundColor: Colors.transparent, // 배경을 투명하게
-                          shadowColor: Colors.transparent, // 그림자도 투명하게
-                          foregroundColor: colorScheme.onPrimary, // 텍스트/아이콘 색상 (primary 위에)
-                          textStyle: textTheme.labelLarge, // labelLarge 스타일
-                          padding: EdgeInsets.zero, // Container 패딩을 따르도록 패딩 제거
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), // 모서리 둥글기 (Container와 일치)
-                        ),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        authBloc.add(AuthSignInWithGoogle());
+                      },
+                      child: Text('Google 계정으로 시작하기', style: textTheme.labelLarge), // labelLarge 스타일
+                      style: ElevatedButton.styleFrom( // ElevatedButtonThemeData 자동 적용
+                        backgroundColor: Colors.transparent, // 배경을 투명하게
+                        shadowColor: Colors.transparent, // 그림자도 투명하게
+                        foregroundColor: colorScheme.onPrimary, // 텍스트/아이콘 색상 (primary 위에)
+                        textStyle: textTheme.labelLarge, // labelLarge 스타일
+                        padding: EdgeInsets.zero, // Container 패딩을 따르도록 패딩 제거
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), // 모서리 둥글기 (Container와 일치)
                       ),
+                    ),
                   );
                 },
               )
               // TODO: 이메일/비밀번호 로그인 UI 추가 가능
             ],
+          ),
           ),
         ),
       ),

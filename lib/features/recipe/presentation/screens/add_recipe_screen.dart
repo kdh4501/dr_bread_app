@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dr_bread_app/core/widgets/background_gradient.dart';
 import 'package:dr_bread_app/features/recipe/domain/usecases/get_recipes_usecase.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -289,45 +290,59 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
             },
           ),
         ],
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                colorScheme.primary, // 시작 색상
+                colorScheme.secondary, // 끝 색상
+                // 또는 colorScheme.primaryContainer, colorScheme.secondaryContainer 등 조합
+              ],
+            ),
+          ),
+        ),
       ),
-      body: GestureDetector(
+      body: BackgroundGradient(
+        child: GestureDetector(
         onTap: () { // 입력창 외의 영역 터치 시 키보드 내려가게
           FocusScope.of(context).unfocus();
         },
-        child: BlocConsumer<RecipeActionBloc, RecipeActionState>(
-          listener: (context, state) {
-            if (state is RecipeActionSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message ?? '작업이 성공적으로 완료되었습니다!'),
-                    backgroundColor: colorScheme.primary,
-                    duration: const Duration(seconds: 2),
-                  )
-              );
-              Navigator.pop(context, true); // 이전 화면으
-            } else if (state is RecipeActionFailure){
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('작업 실패'),
-                  content: Text(state.message),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('확인'),
+          child: BlocConsumer<RecipeActionBloc, RecipeActionState>(
+            listener: (context, state) {
+              if (state is RecipeActionSuccess) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(state.message ?? '작업이 성공적으로 완료되었습니다!'),
+                      backgroundColor: colorScheme.primary,
+                      duration: const Duration(seconds: 2),
                     )
-                  ],
-                ),
-              );
-            }
-          },
-          builder: (context, state) {
-            // 로딩 중이면 로딩 스피너 표시 (전체 화면 로딩)
-            if (state is RecipeActionLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
+                );
+                Navigator.pop(context, true); // 이전 화면으
+              } else if (state is RecipeActionFailure){
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('작업 실패'),
+                    content: Text(state.message),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text('확인'),
+                      )
+                    ],
+                  ),
+                );
+              }
+              },
+            builder: (context, state) {
+              // 로딩 중이면 로딩 스피너 표시 (전체 화면 로딩)
+              if (state is RecipeActionLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-            return Padding(
+              return Padding(
               padding: const EdgeInsets.all(kDefaultPadding),
               child: Form( // 폼 위젯 사용
                 key: _formKey, // 폼 키 연결
@@ -582,7 +597,8 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                 ),
               ),
             );
-          },
+              },
+          ),
         ),
       ),
     );

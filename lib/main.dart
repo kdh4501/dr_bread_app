@@ -215,25 +215,13 @@ class MyApp extends StatelessWidget {
       theme: bbangbaksaTheme,
       debugShowCheckedModeBanner: true, // false 시 디버그 배너 제거 (출시 시)
       // home 속성에 로그인 상태에 따라 화면을 분기하는 위젯 지정
-      home: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              colorScheme.surface, // 시작 색상 (흰색)
-              colorScheme.surfaceVariant.withOpacity(0.5), // 끝 색상 (더 밝은 회색, 투명도 조절)
-            ],
-          ),
-        ),
-        child: const AuthWrapper(), // AuthWrapper가 스플래시 -> 로그인/메인 전환 처리
+      home: const AuthWrapper(), // AuthWrapper가 스플래시 -> 로그인/메인 전환 처리
         // TODO: 만약 별도의 스플래시 스크린을 home으로 설정한다면 Navigator 로직 필요
         // home: const SplashScreen(), // SplashScreen을 홈으로 설정 시
         // routes: { // 라우트 설정 (선택 사항, go_router 등 활용 가능)
         //   '/login': (context) => const LoginScreen(),
         //   '/main': (context) => const MainRecipeListScreen(),
         // },
-      ),
     );
   }
 }
