@@ -187,6 +187,20 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
             },
           ),
         ],
+        // flexibleSpace를 사용하여 그라데이션 배경 추가
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                colorScheme.primary, // 시작 색상
+                colorScheme.secondary, // 끝 색상
+                // 또는 colorScheme.primaryContainer, colorScheme.secondaryContainer 등 조합
+              ],
+            ),
+          ),
+        ),
       ),
       body: GestureDetector(
         onTap: () {

@@ -108,7 +108,7 @@ ThemeData bbangbaksaTheme = ThemeData(
     elevation: 6.0,
   ),
   appBarTheme: AppBarTheme(
-    backgroundColor: const Color(0xFFFFA07A), // 메인 색상
+    // backgroundColor: const Color(0xFFFFA07A), // 메인 색상
     foregroundColor: Colors.white, // 제목/아이콘 색상
     elevation: 2.0, // 그림자 깊이 (살짝만)
     centerTitle: true, // 제목 중앙 정렬
