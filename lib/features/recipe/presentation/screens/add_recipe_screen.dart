@@ -10,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:provider/provider.dart'; // Provider 사용
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../main.dart';
 import '../../domain/entities/recipe.dart';
 // TODO: 레시피 추가 UseCase 임포트
@@ -277,7 +278,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
     final textTheme = theme.textTheme;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: Text(isEditing ? '레시피 편집' : '새 레시피 추가', style: theme.appBarTheme.titleTextStyle), // 모드에 따라 제목 변경
         actions: [
           // 저장 버튼은 이제 Bloc의 로딩 상태를 구독
@@ -290,19 +291,6 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
             },
           ),
         ],
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                colorScheme.primary, // 시작 색상
-                colorScheme.secondary, // 끝 색상
-                // 또는 colorScheme.primaryContainer, colorScheme.secondaryContainer 등 조합
-              ],
-            ),
-          ),
-        ),
       ),
       body: BackgroundGradient(
         child: GestureDetector(

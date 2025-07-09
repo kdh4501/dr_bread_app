@@ -10,6 +10,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart'; // Provider 사용
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_event.dart';
 import '../../../auth/presentation/screens/profile_screen.dart';
@@ -128,7 +129,7 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
     final textTheme = theme.textTheme;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: _isSearching // 검색 중이면 검색 바, 아니면 제목
           ? TextField(
             controller: _searchController,
@@ -188,20 +189,6 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
             },
           ),
         ],
-        // flexibleSpace를 사용하여 그라데이션 배경 추가
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                colorScheme.primary, // 시작 색상
-                colorScheme.secondary, // 끝 색상
-                // 또는 colorScheme.primaryContainer, colorScheme.secondaryContainer 등 조합
-              ],
-            ),
-          ),
-        ),
       ),
       body: BackgroundGradient(
         child: GestureDetector(

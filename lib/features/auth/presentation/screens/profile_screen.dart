@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 import '../../domain/entities/user.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
@@ -29,7 +30,7 @@ class ProfileScreen extends StatelessWidget {
         }
 
         return Scaffold(
-          appBar: AppBar(
+          appBar: CustomAppBar(
             title: Text('내 프로필', style: theme.appBarTheme.titleTextStyle),
           ),
           body: BackgroundGradient(

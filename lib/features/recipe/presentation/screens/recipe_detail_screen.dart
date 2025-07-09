@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart'; // Provider 사용
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 import '../../domain/entities/recipe.dart'; // RecipeEntity 임포트
 // TODO: 상세 레시피 조회 UseCase 임포트
 import '../../domain/usecases/add_recipe_usecase.dart';
@@ -93,7 +94,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
 
     return Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
+        appBar: CustomAppBar(
         // 제목은 RecipeDetailBloc의 상태에서 가져옴
         title: BlocBuilder<RecipeDetailBloc, RecipeDetailState>(
           builder: (context, state) {
