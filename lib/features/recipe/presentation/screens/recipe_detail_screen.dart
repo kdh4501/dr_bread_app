@@ -154,7 +154,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
 
                 return IconButton(
                   icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
-                  color: isFavorite ? colorScheme.secondary : colorScheme.onPrimary, // 즐겨찾기 시 색상 변경
+                  color: isFavorite ? colorScheme.primary : colorScheme.onPrimary, // 즐겨찾기 시 색상 변경
                   onPressed: () {
                     // Bloc에 ToggleFavoriteRequested 이벤트 추가
                     _recipeActionBloc.add(ToggleFavoriteRequested(
