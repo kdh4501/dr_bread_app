@@ -136,9 +136,20 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
             decoration: InputDecoration(
               hintText: '레시피 검색...',
               hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onPrimary.withOpacity(0.7)),
-              border: InputBorder.none, // 테두리 없음
+              border: OutlineInputBorder( // 둥근 모서리 테두리
+                borderRadius: BorderRadius.circular(25.0), // 충분히 둥글게
+                borderSide: BorderSide.none, // 테두리 선은 없음
+              ),
+              enabledBorder: OutlineInputBorder( // 활성화 시 테두리
+                borderRadius: BorderRadius.circular(25.0),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder( // 포커스 시 테두리
+                borderRadius: BorderRadius.circular(25.0),
+                borderSide: BorderSide.none,
+              ),
               filled: true, // 배경색 채우기 활성화
-              fillColor: colorScheme.primary,
+              fillColor: colorScheme.onPrimary.withOpacity(0.15),
               prefixIcon: Icon(Icons.search, color: colorScheme.onPrimary),
               suffixIcon: _searchController.text.isNotEmpty
                   ? IconButton(
