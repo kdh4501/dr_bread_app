@@ -113,20 +113,29 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                 return IconButton(
                   icon: const Icon(Icons.edit),
                   onPressed: () {
+                    // 레시피 카드 클릭 시 상세 화면으로 이동
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return BlocProvider<RecipeActionBloc>.value( // 기존 Bloc 인스턴스 재사용
-                            value: _recipeActionBloc, // RecipeActionBloc 인스턴스 전달
-                            child: AddRecipeScreen(recipeToEdit: loadedRecipe),
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) => BlocProvider<RecipeActionBloc>.value(
+                          value: _recipeActionBloc,
+                          child: AddRecipeScreen(recipeToEdit: loadedRecipe),
+                        ),
+                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                          // 좌우 슬라이드 애니메이션 적용
+                          return SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(1.0, 0.0), // 오른쪽에서 시작 (화면의 오른쪽 끝)
+                              end: Offset.zero, // 왼쪽으로 이동 (화면 중앙)
+                            ).animate(animation),
+                            child: child,
                           );
                         },
+                        transitionDuration: const Duration(milliseconds: 300), // 전환 지속 시간
                       ),
-                    ).then((result) { // 편집 화면에서 돌아왔을 때 (결과가 있다면 목록 갱신 등)
-                      if (result == true) { // 편집 성공 후 돌아왔다면 상세 정보 새로고침
+                    ).then((result) {
+                      if (result == true) {
                         _recipeDetailBloc.add(GetRecipeDetail(widget.recipeId));
-                        // 또는 목록 화면 Provider 갱신 로직 호출
                       }
                     });
                   },
