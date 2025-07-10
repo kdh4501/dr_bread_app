@@ -311,9 +311,12 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
                                   child: RecipeDetailScreen(recipeId: recipe.uid),
                                 ),
                                 transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                                  // 페이드 인 애니메이션 적용
-                                  return FadeTransition(
-                                    opacity: animation,
+                                  // 좌우 슬라이드 애니메이션 적용
+                                  return SlideTransition(
+                                    position: Tween<Offset>(
+                                      begin: const Offset(1.0, 0.0), // 오른쪽에서 시작 (화면의 오른쪽 끝)
+                                      end: Offset.zero, // 왼쪽으로 이동 (화면 중앙)
+                                    ).animate(animation),
                                     child: child,
                                   );
                                 },
