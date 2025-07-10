@@ -48,39 +48,60 @@ class RecipeCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start, // 왼쪽 정렬
               children: [
-                // 레시피 사진 (URL 사용, 캐싱 적용)
-                // Firestore에 사진 URL을 저장하고 여기서 불러옴
-                if (recipe.photoUrl != null && recipe.photoUrl!.isNotEmpty) // photoUrl이 있고 비어있지 않으면
-                  Hero( // Hero 애니메이션 (상세 화면 전환 시 부드러운 이미지 이동)
-                    tag: 'recipeImage_${recipe.uid}', // 고유한 태그
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(kSpacingSmall), // 이미지 모서리 둥글기
-                      child: CachedNetworkImage(
-                        imageUrl: recipe.photoUrl!,
-                        height: 180,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
-                          height: 180,
-                          color: colorScheme.surfaceVariant,
-                          child: const Center(child: CircularProgressIndicator()),
+                Stack(
+                  children: [
+                    // 레시피 사진 (URL 사용, 캐싱 적용)
+                    // Firestore에 사진 URL을 저장하고 여기서 불러옴
+                    if (recipe.photoUrl != null && recipe.photoUrl!.isNotEmpty) // photoUrl이 있고 비어있지 않으면
+                      Hero( // Hero 애니메이션 (상세 화면 전환 시 부드러운 이미지 이동)
+                        tag: 'recipeImage_${recipe.uid}', // 고유한 태그
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(kSpacingSmall), // 이미지 모서리 둥글기
+                          child: CachedNetworkImage(
+                            imageUrl: recipe.photoUrl!,
+                            height: 180,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              height: 180,
+                              color: colorScheme.surfaceVariant,
+                              child: const Center(child: CircularProgressIndicator()),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              height: 180,
+                              color: colorScheme.surfaceVariant,
+                              child: Icon(Icons.broken_image, size: kIconSizeLarge, color: colorScheme.onSurfaceVariant),
+                            ),
+                          ),
                         ),
-                        errorWidget: (context, url, error) => Container(
-                          height: 180,
-                          color: colorScheme.surfaceVariant,
-                          child: Icon(Icons.broken_image, size: kIconSizeLarge, color: colorScheme.onSurfaceVariant),
+                      )
+                    else
+                    // 사진 없을 때 기본 이미지 또는 Placeholder 표시
+                      Container(
+                        width: double.infinity,
+                        height: 180,
+                        color: colorScheme.surfaceVariant,
+                        child: Icon(Icons.image_not_supported, size: kIconSizeLarge, color: colorScheme.onSurfaceVariant),
+                      ),
+
+                    // ↓↓↓↓↓ 카테고리 뱃지 오버레이 ↓↓↓↓↓
+                    if (recipe.category != null && recipe.category!.isNotEmpty)
+                      Positioned( // 이미지 위에 배치
+                        top: kSpacingSmall, // 상단 여백
+                        left: kSpacingSmall, // 좌측 여백
+                        child: Chip(
+                          label: Text(
+                            recipe.category!,
+                            style: textTheme.labelMedium?.copyWith(color: colorScheme.onPrimary), // labelMedium, onPrimary
+                          ),
+                          backgroundColor: colorScheme.primary, // primary 색상
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(kSpacingSmall)), // 모서리 둥글게
+                          padding: const EdgeInsets.symmetric(horizontal: kSpacingSmall, vertical: kSpacingExtraSmall), // 내부 패딩
+                          elevation: 2.0, // 그림자 추가
                         ),
                       ),
-                    ),
-                  )
-                else
-                // 사진 없을 때 기본 이미지 또는 Placeholder 표시
-                  Container(
-                    width: double.infinity,
-                    height: 180,
-                    color: colorScheme.surfaceVariant,
-                    child: Icon(Icons.image_not_supported, size: kIconSizeLarge, color: colorScheme.onSurfaceVariant),
-                  ),
+                  ],
+                ),
 
                 const SizedBox(height: kSpacingMedium), // 이미지와 제목 사이 간격
 
