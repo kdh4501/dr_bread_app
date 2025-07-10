@@ -1,5 +1,6 @@
 import 'package:dr_bread_app/core/widgets/background_gradient.dart';
 import 'package:dr_bread_app/features/recipe/presentation/bloc/recipe_detail_state.dart';
+import 'package:dr_bread_app/features/recipe/presentation/screens/photo_view_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart'; // Provider 사용
@@ -246,19 +247,44 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                   children: [
                     // 레시피 사진
                     if (recipe.photoUrl != null && recipe.photoUrl!.isNotEmpty)
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(kSpacingMedium),
-                        child: CachedNetworkImage( // 이미지 캐싱 패키지
-                          imageUrl: recipe.photoUrl!,
-                          width: double.infinity,
-                          height: 250,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                          errorWidget: (context, url, error) => const Icon(Icons.error_outline, size: 50),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                            PageRouteBuilder( // 부드러운 화면 전환
+                              pageBuilder: (context, animation, secondaryAnimation) => PhotoViewScreen(imageUrl: recipe.photoUrl!),
+                              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                return FadeTransition(opacity: animation, child: child); // 페이드 전환
+                              },
+                              transitionDuration: const Duration(milliseconds: 300),
+                            ),
+                          );
+                        },
+                        child: Hero(
+                          tag: 'recipeImage_${recipe.uid}',
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(kSpacingMedium),
+                            child: CachedNetworkImage( // 이미지 캐싱 패키지
+                              imageUrl: recipe.photoUrl!,
+                              width: double.infinity,
+                              height: 250,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => Container(
+                                height: 250,
+                                color: colorScheme.surfaceVariant,
+                                child: const Center(child: CircularProgressIndicator()),
+                              ),
+                              errorWidget: (context, url, error) => Container(
+                                height: 250,
+                                color: colorScheme.surfaceVariant,
+                                child: Icon(Icons.broken_image, size: kIconSizeLarge, color: colorScheme.onSurfaceVariant),
+                              ),
+                            ),
+                          ),
                         ),
                       )
                     else
-                    // 사진 없을 때 Placeholder
+                      // 사진 없을 때 Placeholder
                       Container(
                         width: double.infinity,
                         height: 250,
