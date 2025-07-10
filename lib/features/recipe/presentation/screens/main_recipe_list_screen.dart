@@ -195,7 +195,19 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) => const ProfileScreen(),
+                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    return SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(1.0, 0.0), // 오른쪽에서 시작
+                        end: Offset.zero, // 왼쪽으로 이동
+                      ).animate(animation),
+                      child: child,
+                    );
+                  },
+                  transitionDuration: const Duration(milliseconds: 300), // 전환 지속 시간
+                ),
               );
             },
           ),
@@ -346,14 +358,22 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
           // 새 레시피 추가 화면으로 이동
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) {
-                // RecipeActionBloc 인스턴스 재사용하여 AddRecipeScreen으로 전달
-                return BlocProvider<RecipeActionBloc>.value(
-                  value: _recipeActionBloc,
-                  child: const AddRecipeScreen(),
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => BlocProvider<RecipeActionBloc>.value(
+                value: _recipeActionBloc,
+                child: const AddRecipeScreen(),
+              ),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                // 좌우 슬라이드 애니메이션 적용
+                return SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(1.0, 0.0), // 오른쪽에서 시작 (화면의 오른쪽 끝)
+                    end: Offset.zero, // 왼쪽으로 이동 (화면 중앙)
+                  ).animate(animation),
+                  child: child,
                 );
               },
+              transitionDuration: const Duration(milliseconds: 300), // 전환 지속 시간
             ),
           ).then((result) {
             if (result == true) { // 추가/편집 후 돌아왔을 때 목록 새로고침
