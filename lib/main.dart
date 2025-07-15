@@ -21,13 +21,19 @@ import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/screens/auth_wrapper.dart';
 import 'features/recipe/data/datasources/firebase_storage_data_source.dart';
 import 'features/recipe/data/datasources/firestore_recipe_data_source.dart';
+import 'features/recipe/data/datasources/firestore_review_data_source.dart';
 import 'features/recipe/data/repositories/recipe_repository_impl.dart';
+import 'features/recipe/data/repositories/review_repository_impl.dart';
 import 'features/recipe/data/repositories/storage_repository_impl.dart';
+import 'features/recipe/domain/repositories/review_repository.dart';
 import 'features/recipe/domain/repositories/storage_repository.dart';
 import 'features/recipe/domain/usecases/add_recipe_usecase.dart';
+import 'features/recipe/domain/usecases/add_review_usecase.dart';
 import 'features/recipe/domain/usecases/delete_recipe_usecase.dart';
+import 'features/recipe/domain/usecases/delete_review_usecase.dart';
 import 'features/recipe/domain/usecases/get_recipe_detail_usecase.dart';
 import 'features/recipe/domain/usecases/get_recipes_usecase.dart';
+import 'features/recipe/domain/usecases/get_reviews_for_recipe_usecase.dart';
 import 'features/recipe/domain/usecases/search_recipes_usecase.dart';
 import 'features/recipe/domain/usecases/update_recipe_usecase.dart';
 import 'features/recipe/domain/usecases/upload_image_usecase.dart';
@@ -167,6 +173,17 @@ Future<void> setupDependencies() async {
   getIt.registerLazySingleton<UploadImageUseCase>( // TODO: UploadImageUseCase 구현 필요
           () => UploadImageUseCase(getIt<StorageRepository>())); // 의존성 주입 // TODO: StorageRepository 인터페이스 구현 필요
 
+  // Review 관련 DataSource, Repository, UseCase 등록
+  getIt.registerLazySingleton<FirestoreReviewDataSource>(
+          () => FirestoreReviewDataSource(getIt<FirebaseFirestore>()));
+  getIt.registerLazySingleton<ReviewRepository>(
+          () => ReviewRepositoryImpl(getIt<FirestoreReviewDataSource>()));
+  getIt.registerLazySingleton<AddReviewUseCase>(
+          () => AddReviewUseCase(getIt<ReviewRepository>(), getIt<AuthRepository>()));
+  getIt.registerLazySingleton<GetReviewsForRecipeUseCase>(
+          () => GetReviewsForRecipeUseCase(getIt<ReviewRepository>()));
+  getIt.registerLazySingleton<DeleteReviewUseCase>(
+          () => DeleteReviewUseCase(getIt<ReviewRepository>()));
 
   // Provider는 MultiProvider에서 생성하지만, 필요한 UseCase 등은 get_it에서 가져옴
   // 예시: AuthProvider 생성자에서 getIt 사용
