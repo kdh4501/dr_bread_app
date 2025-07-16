@@ -12,8 +12,6 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
   final GetReviewsForRecipeUseCase _getReviewsForRecipeUseCase;
   final DeleteReviewUseCase _deleteReviewUseCase;
 
-  StreamSubscription? _reviewsSubscription;
-
   ReviewBloc(
       this._addReviewUseCase,
       this._getReviewsForRecipeUseCase,
@@ -25,15 +23,16 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
   }
 
   Future<void> _onGetReviews(GetReviews event, Emitter<ReviewState> emit) async {
-    _reviewsSubscription?.cancel(); // 이전 구독 취소
     emit(ReviewLoading(reviews: state.reviews));
     try {
       final reviewStream = _getReviewsForRecipeUseCase(event.recipeId);
-      _reviewsSubscription = reviewStream.listen(
-            (reviews) {
+
+      await emit.onEach( // await 키워드를 사용하여 스트림이 완료될 때까지 기다림
+        reviewStream, // 구독할 스트림
+        onData: (reviews) { // 스트림에서 새로운 데이터가 발행될 때마다 호출
           emit(ReviewLoaded(reviews: reviews));
         },
-        onError: (error, stackTrace) {
+        onError: (error, stackTrace) { // 스트림에서 에러 발생 시 호출
           emit(ReviewError(errorMessage: '리뷰를 불러오는데 실패했습니다: $error', reviews: state.reviews));
         },
       );
@@ -69,7 +68,6 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
 
   @override
   Future<void> close() {
-    _reviewsSubscription?.cancel();
     return super.close();
   }
 }
