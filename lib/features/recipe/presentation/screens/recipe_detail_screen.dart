@@ -6,8 +6,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart'; // Provider 사용
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
+import '../../../auth/domain/entities/user.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../auth/presentation/bloc/auth_state.dart';
 import '../../domain/entities/recipe.dart'; // RecipeEntity 임포트
 // TODO: 상세 레시피 조회 UseCase 임포트
+import '../../domain/entities/review.dart';
 import '../../domain/usecases/add_recipe_usecase.dart';
 import '../../domain/usecases/get_recipe_detail_usecase.dart'; // UseCase
 // TODO: 레시피 삭제 UseCase 임포트
@@ -20,7 +24,12 @@ import '../bloc/recipe_action_event.dart';
 import '../bloc/recipe_action_state.dart';
 import '../bloc/recipe_detail_bloc.dart';
 import '../bloc/recipe_detail_event.dart';
+import '../bloc/review_bloc.dart';
+import '../bloc/review_event.dart';
+import '../bloc/review_state.dart';
 import '../widgets/empty_error_state_widget.dart';
+import '../widgets/rating_bar_widget.dart';
+import '../widgets/review_item_widget.dart';
 import 'add_recipe_screen.dart'; // AddRecipeScreen
 // TODO: 이미지 캐싱 패키지 임포트 (RecipeCard와 동일)
 import 'package:cached_network_image/cached_network_image.dart';
@@ -42,6 +51,8 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
   // Bloc 인스턴스 가져오기
   late final RecipeActionBloc _recipeActionBloc;  // RecipeActionBloc: 레시피 추가/편집/삭제 작업의 로딩, 성공, 실패 상태를 관리.
   late final RecipeDetailBloc _recipeDetailBloc;
+  late final ReviewBloc _reviewBloc;
+  late final AuthBloc _authBloc;
 
   @override
   void initState() {
@@ -49,10 +60,13 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
     // Bloc 인스턴스 가져오기
     _recipeActionBloc = context.read<RecipeActionBloc>();
     _recipeDetailBloc = context.read<RecipeDetailBloc>();
+    _reviewBloc = context.read<ReviewBloc>();
+    _authBloc = context.read<AuthBloc>();
 
     // 화면 로딩 시 상세 데이터 가져오기
     // _fetchRecipeDetail() 함수 호출 대신 Bloc에 이벤트 추가
     _recipeDetailBloc.add(GetRecipeDetail(widget.recipeId));
+    _reviewBloc.add(GetReviews(widget.recipeId));
   }
 
   // 레시피 삭제 함수
@@ -86,6 +100,76 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
     }
   }
 
+  void _showReviewInputDialog(BuildContext context, String recipeId, UserEntity currentUser) {
+    final TextEditingController reviewController = TextEditingController();
+    double currentRating = 3.0; // 기본 평점
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog( // DialogTheme 자동 적용
+        title: const Text('리뷰 작성'),
+        content: SingleChildScrollView( // 내용이 길어질 경우 스크롤 가능
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('평점', style: Theme.of(context).textTheme.titleMedium),
+              RatingBarWidget(
+                rating: currentRating,
+                onRatingUpdate: (rating) {
+                  currentRating = rating;
+                },
+                itemSize: 30, // 다이얼로그에서는 좀 더 크게
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              const SizedBox(height: kSpacingMedium),
+              TextField(
+                controller: reviewController,
+                decoration: const InputDecoration(
+                  labelText: '리뷰 내용',
+                  hintText: '레시피에 대한 의견을 남겨주세요.',
+                ),
+                maxLines: 3,
+                keyboardType: TextInputType.multiline,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('취소'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (reviewController.text.trim().isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('리뷰 내용을 입력해주세요.')),
+                );
+                return;
+              }
+              // 리뷰 추가 이벤트
+              _reviewBloc.add(AddReview(
+                ReviewEntity(
+                  uid: '', // Firestore에서 자동 생성
+                  recipeId: recipeId,
+                  authorUid: currentUser.uid,
+                  authorDisplayName: currentUser.displayName,
+                  authorPhotoUrl: currentUser.photoUrl,
+                  rating: currentRating,
+                  reviewText: reviewController.text.trim(),
+                  createdAt: DateTime.now(),
+                ),
+              ));
+              Navigator.pop(context); // 다이얼로그 닫기
+            },
+            child: const Text('작성'),
+          ),
+        ],
+      ),
+    ).then((_) {
+      reviewController.dispose(); // 컨트롤러 dispose
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -211,6 +295,10 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                 ],
               ),
             );
+          }
+          // 리뷰 추가/수정/삭제 성공 시 리뷰 목록 갱신 이벤트 추가
+          if (state is RecipeActionSuccess && state.message?.contains('리뷰') == true) {
+            _reviewBloc.add(GetReviews(widget.recipeId)); // 리뷰 목록 새로고침
           }
         },
           builder: (context, actionState) {
@@ -355,6 +443,97 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                           child: Text('$stepNum. $stepText', style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface)), // bodyMedium 스타일, onSurface 색상
                         );
                       }).toList() ?? [],
+                    ),
+
+                    const SizedBox(height: kSpacingLarge),
+                    Divider(color: colorScheme.outlineVariant), // 구분선
+                    const SizedBox(height: kSpacingLarge),
+
+                    // ↓↓↓↓↓ 리뷰 및 평점 섹션 ↓↓↓↓↓
+                    Text('리뷰 및 평점', style: textTheme.titleLarge?.copyWith(color: colorScheme.onSurface)),
+                    const SizedBox(height: kSpacingMedium),
+
+                    // 평균 평점 표시
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        RatingBarWidget(
+                          rating: recipe.averageRating ?? 0.0, // 평균 평점
+                          itemSize: 24,
+                          color: colorScheme.primary,
+                        ),
+                        const SizedBox(width: kSpacingSmall),
+                        Text(
+                          '${recipe.averageRating?.toStringAsFixed(1) ?? '0.0'} (${recipe.reviewCount ?? 0}개 리뷰)',
+                          style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: kSpacingMedium),
+
+                    // 리뷰 작성 버튼 (로그인된 사용자만)
+                    BlocBuilder<AuthBloc, AuthState>(
+                      builder: (context, authState) {
+                        if (authState is AuthAuthenticated) {
+                          return ElevatedButton(
+                            onPressed: () {
+                              _showReviewInputDialog(context, recipe.uid, authState.user); // 리뷰 작성 다이얼로그 띄우기
+                            },
+                            child: const Text('리뷰 작성하기'),
+                          );
+                        }
+                        return TextButton(
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('리뷰 작성은 로그인 후 이용 가능합니다.')),
+                            );
+                          },
+                          child: const Text('로그인 후 리뷰 작성'),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: kSpacingLarge),
+
+                    // 리뷰 목록 표시
+                    BlocBuilder<ReviewBloc, ReviewState>(
+                      builder: (context, reviewState) {
+                        if (reviewState is ReviewLoading) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        if (reviewState is ReviewError) {
+                          return EmptyErrorStateWidget(
+                            message: reviewState.errorMessage ?? '리뷰를 불러오는데 실패했습니다.',
+                            icon: Icons.error_outline,
+                            isError: true,
+                          );
+                        }
+                        if (reviewState is ReviewLoaded) {
+                          if (reviewState.reviews.isEmpty) {
+                            return EmptyErrorStateWidget(
+                              message: '아직 리뷰가 없어요.\n첫 리뷰를 남겨보세요!',
+                              icon: Icons.rate_review,
+                            );
+                          }
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(), // 스크롤 막기 (부모 ListView가 스크롤)
+                            itemCount: reviewState.reviews.length,
+                            itemBuilder: (context, index) {
+                              final review = reviewState.reviews[index];
+                              final currentUserUid = (_authBloc.state is AuthAuthenticated) ? (_authBloc.state as AuthAuthenticated).user.uid : null;
+                              return ReviewItemWidget(
+                                review: review,
+                                isMyReview: currentUserUid == review.authorUid, // 내 리뷰인지 확인
+                                onDelete: () {
+                                  _reviewBloc.add(DeleteReview(review.uid)); // 리뷰 삭제 이벤트
+                                },
+                                // TODO: 리뷰 수정 기능 추가
+                              );
+                            },
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
                     ),
                     // TODO: 필요한 온도, 시간, 팁 등 추가 정보 표시
                   ],

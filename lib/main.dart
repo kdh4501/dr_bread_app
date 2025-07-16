@@ -40,6 +40,7 @@ import 'features/recipe/domain/usecases/upload_image_usecase.dart';
 import 'features/recipe/presentation/bloc/recipe_action_bloc.dart';
 import 'features/recipe/presentation/bloc/recipe_detail_bloc.dart';
 import 'features/recipe/presentation/bloc/recipe_list_bloc.dart';
+import 'features/recipe/presentation/bloc/review_bloc.dart';
 import 'features/recipe/presentation/providers/recipe_list_provider.dart';
 import 'firebase_options.dart';
 
@@ -104,6 +105,13 @@ void main() async {
           ),
           BlocProvider<RecipeDetailBloc>(
             create: (_) => RecipeDetailBloc(getIt<GetRecipeDetailUseCase>()),
+          ),
+          BlocProvider<ReviewBloc>(
+            create: (_) => ReviewBloc(
+              getIt<AddReviewUseCase>(),
+              getIt<GetReviewsForRecipeUseCase>(),
+              getIt<DeleteReviewUseCase>(),
+            ),
           ),
         ],
         child: const MyApp(), // 하위 위젯들이 Provider에 접근 가능
