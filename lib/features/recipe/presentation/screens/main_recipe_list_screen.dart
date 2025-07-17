@@ -10,6 +10,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart'; // Provider 사용
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/routes/fab_transition_route.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/custom_loading_indicator.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
@@ -38,6 +39,7 @@ class MainRecipeListScreen extends StatefulWidget { // StatefulWidget 또는 Sta
 }
 
 class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
+  final GlobalKey _fabKey = GlobalKey();
 
   // 검색 바 컨트롤러
   final TextEditingController _searchController = TextEditingController();
@@ -355,26 +357,40 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
       ),
       // 새 레시피 추가 FAB
       floatingActionButton: FloatingActionButton(
+        key: _fabKey,
         onPressed: () {
+          // FAB의 위치와 크기 측정
+          final RenderBox fabRenderBox = _fabKey.currentContext?.findRenderObject() as RenderBox;
+          final Offset fabOrigin = fabRenderBox.localToGlobal(Offset.zero);
+          final Size fabSize = fabRenderBox.size;
+
           // 새 레시피 추가 화면으로 이동
           Navigator.push(
             context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => BlocProvider<RecipeActionBloc>.value(
+            // PageRouteBuilder(
+            //   pageBuilder: (context, animation, secondaryAnimation) => BlocProvider<RecipeActionBloc>.value(
+            //     value: _recipeActionBloc,
+            //     child: const AddRecipeScreen(),
+            //   ),
+            //   transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            //     // 좌우 슬라이드 애니메이션 적용
+            //     return SlideTransition(
+            //       position: Tween<Offset>(
+            //         begin: const Offset(1.0, 0.0), // 오른쪽에서 시작 (화면의 오른쪽 끝)
+            //         end: Offset.zero, // 왼쪽으로 이동 (화면 중앙)
+            //       ).animate(animation),
+            //       child: child,
+            //     );
+            //   },
+            //   transitionDuration: const Duration(milliseconds: 300), // 전환 지속 시간
+            // ),
+            FabTransitionRoute(
+              builder: (context) => BlocProvider<RecipeActionBloc>.value(
                 value: _recipeActionBloc,
                 child: const AddRecipeScreen(),
               ),
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                // 좌우 슬라이드 애니메이션 적용
-                return SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(1.0, 0.0), // 오른쪽에서 시작 (화면의 오른쪽 끝)
-                    end: Offset.zero, // 왼쪽으로 이동 (화면 중앙)
-                  ).animate(animation),
-                  child: child,
-                );
-              },
-              transitionDuration: const Duration(milliseconds: 300), // 전환 지속 시간
+              fabOrigin: fabOrigin, // FAB의 시작 위치
+              fabSize: fabSize, // FAB의 크기
             ),
           ).then((result) {
             if (result == true) { // 추가/편집 후 돌아왔을 때 목록 새로고침
