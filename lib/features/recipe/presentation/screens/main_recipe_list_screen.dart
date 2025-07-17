@@ -239,7 +239,7 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
             if (state is RecipeListError) {
               return EmptyErrorStateWidget( // <-- 적용!
                 message: state.errorMessage ?? '레시피를 불러오는데 실패했습니다.',
-                icon: Icons.error_outline,
+                lottieAsset: 'assets/lottie/error_sad.json',
                 buttonText: '다시 시도',
                 onButtonPressed: () {
                   context.read<RecipeListBloc>().add(FetchRecipes());
@@ -254,7 +254,7 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
               if (state.searchQuery.isNotEmpty || state.filterOptions != const RecipeFilterOptions()) {
                 return EmptyErrorStateWidget( // <-- 적용!
                   message: '검색 결과가 없거나 필터에 해당하는 레시피가 없습니다.',
-                  icon: Icons.search_off,
+                  lottieAsset: 'assets/lottie/empty_search.json',
                   buttonText: (state.filterOptions != const RecipeFilterOptions()) ? '필터 초기화' : null,
                   onButtonPressed: (state.filterOptions != const RecipeFilterOptions())
                       ? () {
@@ -266,7 +266,7 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
                 // 검색어도 필터도 없는 상태에서 레시피가 없으면 '아직 레시피 없음' 메시지
                 return EmptyErrorStateWidget( // <-- 적용!
                   message: '아직 레시피가 없어요!\n아래 + 버튼을 눌러 첫 레시피를 추가해보세요!',
-                  icon: Icons.menu_book,
+                  lottieAsset: 'assets/lottie/empty_recipe.json',
                   // buttonText: '레시피 추가', // + 버튼이 있으므로 필요 없을 수 있음
                   // onButtonPressed: () { /* FAB와 연결 */ },
                 );

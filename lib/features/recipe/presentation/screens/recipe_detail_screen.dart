@@ -540,22 +540,22 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                             final bool isLoggedIn = currentUserState is AuthAuthenticated;
 
                             String emptyReviewMessage;
-                            IconData emptyReviewIcon;
+                            String emptyReviewIcon;
                             String? buttonText;
                             VoidCallback? onButtonPressed;
 
                             if (isMyRecipe) {
                               // Case 1: 내 레시피 && 리뷰 없음
                               emptyReviewMessage = '아직 이 레시피에 대한 리뷰가 없어요.\n다른 분들의 소중한 리뷰를 기다리고 있습니다!';
-                              emptyReviewIcon = Icons.rate_review; // 또는 Icons.hourglass_empty, Icons.people_outline
+                              emptyReviewIcon = 'assets/lottie/rate_review.json'; // 또는 Icons.hourglass_empty, Icons.people_outline
                             } else if (isLoggedIn) {
                               // Case 2: 내 레시피 아님 && 로그인됨 && 리뷰 없음
                               emptyReviewMessage = '아직 리뷰가 없어요.\n첫 리뷰를 남겨보세요!';
-                              emptyReviewIcon = Icons.rate_review;
+                              emptyReviewIcon = 'assets/lottie/rate_review.json';
                             } else {
                               // Case 3: 내 레시피 아님 && 로그인 안 됨 && 리뷰 없음
                               emptyReviewMessage = '로그인 후 첫 리뷰를 남길 수 있습니다.';
-                              emptyReviewIcon = Icons.lock_outline; // 잠금 아이콘 또는 로그인 아이콘
+                              emptyReviewIcon = 'assets/lottie/lock.json'; // 잠금 아이콘 또는 로그인 아이콘
                               buttonText = '로그인하기';
                               onButtonPressed = () {
                                 // 로그인 화면으로 이동 또는 로그인 플로우 시작
@@ -568,7 +568,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
 
                             return EmptyErrorStateWidget(
                               message: emptyReviewMessage,
-                              icon: emptyReviewIcon,
+                              lottieAsset: emptyReviewIcon,
                               buttonText: buttonText,
                               onButtonPressed: onButtonPressed,
                             );

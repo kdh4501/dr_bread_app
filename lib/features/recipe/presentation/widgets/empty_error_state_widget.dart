@@ -1,10 +1,12 @@
 // lib/features/recipe/presentation/widgets/empty_error_state_widget.dart
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import '../../../../core/constants/app_constants.dart'; // 상수 임포트
 
 class EmptyErrorStateWidget extends StatelessWidget {
   final String message;
-  final IconData icon;
+  final IconData? icon;
+  final String? lottieAsset;
   final String? buttonText;
   final VoidCallback? onButtonPressed;
   final bool isError;
@@ -12,7 +14,8 @@ class EmptyErrorStateWidget extends StatelessWidget {
   const EmptyErrorStateWidget({
     Key? key,
     required this.message,
-    required this.icon,
+    this.icon,
+    this.lottieAsset,
     this.buttonText,
     this.onButtonPressed,
     this.isError = false, // 에러 상태인지 여부
@@ -31,11 +34,19 @@ class EmptyErrorStateWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              size: kIconSizeLarge * 1.5, // 더 큰 아이콘
-              color: isError ? colorScheme.error : colorScheme.onSurfaceVariant, // 에러면 에러 색상, 아니면 보조 색상
-            ),
+            if (lottieAsset != null)
+              Lottie.asset(
+                lottieAsset!,
+                width: 150, // 크기 조절
+                height: 150,
+                fit: BoxFit.contain,
+              )
+            else if (icon != null)
+              Icon(
+                icon,
+                size: kIconSizeLarge * 1.5, // 더 큰 아이콘
+                color: isError ? colorScheme.error : colorScheme.onSurfaceVariant, // 에러면 에러 색상, 아니면 보조 색상
+              ),
             const SizedBox(height: kSpacingLarge),
             Text(
               message,
