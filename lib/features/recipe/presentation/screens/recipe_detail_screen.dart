@@ -526,12 +526,55 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                           );
                         }
                         if (reviewState is ReviewLoaded) {
+                          // 리뷰 목록이 비어있는 경우
                           if (reviewState.reviews.isEmpty) {
+                            // 현재 레시피 정보 가져오기 (이전 BlocBuilder에서 제공된 recipe가 유효함)
+                            final RecipeEntity currentRecipe = (context.read<RecipeDetailBloc>().state as RecipeDetailLoaded).recipe;
+                            // 현재 로그인 사용자 정보 가져오기
+                            final currentUserState = _authBloc.state;
+                            final String? currentUserUid = (currentUserState is AuthAuthenticated) ? currentUserState.user.uid : null;
+
+                            // 레시피 소유 여부 판단
+                            final bool isMyRecipe = (currentUserUid != null && currentUserUid == currentRecipe.authorUid);
+                            // 로그인 여부 판단
+                            final bool isLoggedIn = currentUserState is AuthAuthenticated;
+
+                            String emptyReviewMessage;
+                            IconData emptyReviewIcon;
+                            String? buttonText;
+                            VoidCallback? onButtonPressed;
+
+                            if (isMyRecipe) {
+                              // Case 1: 내 레시피 && 리뷰 없음
+                              emptyReviewMessage = '아직 이 레시피에 대한 리뷰가 없어요.\n다른 분들의 소중한 리뷰를 기다리고 있습니다!';
+                              emptyReviewIcon = Icons.rate_review; // 또는 Icons.hourglass_empty, Icons.people_outline
+                            } else if (isLoggedIn) {
+                              // Case 2: 내 레시피 아님 && 로그인됨 && 리뷰 없음
+                              emptyReviewMessage = '아직 리뷰가 없어요.\n첫 리뷰를 남겨보세요!';
+                              emptyReviewIcon = Icons.rate_review;
+                            } else {
+                              // Case 3: 내 레시피 아님 && 로그인 안 됨 && 리뷰 없음
+                              emptyReviewMessage = '로그인 후 첫 리뷰를 남길 수 있습니다.';
+                              emptyReviewIcon = Icons.lock_outline; // 잠금 아이콘 또는 로그인 아이콘
+                              buttonText = '로그인하기';
+                              onButtonPressed = () {
+                                // 로그인 화면으로 이동 또는 로그인 플로우 시작
+                                // (AuthWrapper가 최상단에 있으므로, 이 경우 보통 AuthWrapper가 로그인 상태 변화를 감지하고 LoginScreen으로 리디렉션)
+                                // 여기서는 단순히 현재 화면 닫고 AuthWrapper가 동작하도록 popToRoot.
+                                // 또는, 필요에 따라 LoginScreen으로 직접 push할 수 있음.
+                                Navigator.of(context).popUntil((route) => route.isFirst);
+                              };
+                            }
+
                             return EmptyErrorStateWidget(
-                              message: '아직 리뷰가 없어요.\n첫 리뷰를 남겨보세요!',
-                              icon: Icons.rate_review,
+                              message: emptyReviewMessage,
+                              icon: emptyReviewIcon,
+                              buttonText: buttonText,
+                              onButtonPressed: onButtonPressed,
                             );
                           }
+
+                          // 리뷰 목록이 있는 경우
                           return ListView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(), // 스크롤 막기 (부모 ListView가 스크롤)
