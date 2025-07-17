@@ -3,6 +3,7 @@ import 'package:dr_bread_app/core/widgets/background_gradient.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart'; // Provider 사용 예시
+import '../../../../core/widgets/custom_loading_indicator.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
@@ -58,7 +59,9 @@ class LoginScreen extends StatelessWidget {
                 },
                 builder: (context, state) {
                   if (state is AuthLoading) {
-                    return CircularProgressIndicator(color: colorScheme.primary);
+                    return CustomLoadingIndicator(
+                      backgroundColor: Theme.of(context).colorScheme.background.withOpacity(0.8), // 로딩 중 화면 위에 배경색
+                    );
                   }
                   return Container(
                     width: double.infinity,

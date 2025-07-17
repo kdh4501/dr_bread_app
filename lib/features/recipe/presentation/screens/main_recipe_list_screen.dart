@@ -11,6 +11,7 @@ import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart'; // Provider 사용
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
+import '../../../../core/widgets/custom_loading_indicator.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_event.dart';
 import '../../../auth/presentation/screens/profile_screen.dart';
@@ -232,7 +233,7 @@ class _MainRecipeListScreenState extends State<MainRecipeListScreen> {
           builder: (context, state) {
             // 로딩 중 상태 처리
             if (state is RecipeListLoading) {
-              return const Center(child: CircularProgressIndicator()); // 로딩 스피너
+              return const CustomLoadingIndicator(); // 로딩 스피너
             }
 
             // 에러 상태 처리

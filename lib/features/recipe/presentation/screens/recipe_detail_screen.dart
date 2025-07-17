@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart'; // Provider 사용
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
+import '../../../../core/widgets/custom_loading_indicator.dart';
 import '../../../auth/domain/entities/user.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
@@ -314,7 +315,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
             builder: (context, detailState) {
               // 상세 정보 로딩 중
               if (detailState is RecipeDetailLoading) {
-                return const Center(child: CircularProgressIndicator());
+                return const CustomLoadingIndicator();
               }
               // 에러 상태 (상세 정보 로딩 에러)
               if (detailState is RecipeDetailError) {
@@ -334,7 +335,9 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
 
                 // RecipeActionBloc의 로딩 상태 (삭제/편집 작업 로딩)
                 if (actionState is RecipeActionLoading) { // RecipeActionBloc의 로딩 상태가 우선
-                  return const Center(child: CircularProgressIndicator());
+                  return CustomLoadingIndicator(
+                    backgroundColor: Theme.of(context).colorScheme.background.withOpacity(0.8), // 로딩 중 화면 위에 배경색
+                  );
                 }
 
                 // 모든 로딩/에러/빈 상태가 아니면 상세 정보 표시
@@ -506,7 +509,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                     BlocBuilder<ReviewBloc, ReviewState>(
                       builder: (context, reviewState) {
                         if (reviewState is ReviewLoading) {
-                          return const Center(child: CircularProgressIndicator());
+                          return const CustomLoadingIndicator(size: 100);
                         }
                         if (reviewState is ReviewError) {
                           final userFriendlyMessage = '리뷰를 불러오는 데 문제가 발생했습니다.\n잠시 후 다시 시도해 주세요.';
