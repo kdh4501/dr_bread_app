@@ -7,9 +7,6 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import {onRequest} from "firebase-functions/v2/https";
-import * as logger from "firebase-functions/logger";
-
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
@@ -46,6 +43,7 @@ interface Recipe {
     // photoUrl?: string;
     // authorUid?: string;
     // createdAt?: admin.firestore.Timestamp;
+    [key: string]: any; // 모든 문자열 키에 대해 어떤 타입의 값도 허용 (Firestore update 호환용)
 }
 
 // Start writing functions
@@ -114,7 +112,7 @@ export const updateRecipeReviewStats = functions.firestore
                 updatedAt: admin.firestore.FieldValue.serverTimestamp(),
             };
 
-            transaction.update(recipeRef, updateData); // 타입이 명확한 updateData 사용
+            transaction.update(recipeRef, updateData as Partial<Recipe>); // 타입이 명확한 updateData 사용
 
             console.log(`Updated stats for recipe ${recipeId}: averageRating=${averageRating.toFixed(2)}, reviewCount=${reviewCount}`);
             return null;
