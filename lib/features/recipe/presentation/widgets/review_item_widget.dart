@@ -10,12 +10,14 @@ class ReviewItemWidget extends StatelessWidget {
   final ReviewEntity review;
   final bool isMyReview; // 내 리뷰인지 여부
   final VoidCallback? onDelete; // 삭제 콜백
+  final VoidCallback? onEdit; // 수정 콜백
 
   const ReviewItemWidget({
     Key? key,
     required this.review,
     this.isMyReview = false,
     this.onDelete,
+    this.onEdit,
   }) : super(key: key);
 
   @override
@@ -66,9 +68,20 @@ class ReviewItemWidget extends StatelessWidget {
                 ),
                 // 내 리뷰인 경우 삭제 버튼
                 if (isMyReview && onDelete != null)
-                  IconButton(
-                    icon: Icon(Icons.delete_outline, size: kIconSizeMedium, color: colorScheme.onSurfaceVariant),
-                    onPressed: onDelete,
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // 수정 버튼
+                      IconButton(
+                        icon: Icon(Icons.edit_note, size: kIconSizeMedium, color: colorScheme.onSurfaceVariant),
+                        onPressed: onEdit, // <-- 여기에 연결!
+                      ),
+                      // 삭제 버튼
+                      IconButton(
+                        icon: Icon(Icons.delete_outline, size: kIconSizeMedium, color: colorScheme.onSurfaceVariant),
+                        onPressed: onDelete,
+                      ),
+                    ],
                   ),
               ],
             ),

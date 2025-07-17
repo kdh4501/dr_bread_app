@@ -26,4 +26,10 @@ class ReviewRepositoryImpl implements ReviewRepository {
   Future<void> deleteReview(String reviewId) async {
     await dataSource.deleteReview(reviewId);
   }
+
+  @override
+  Future<void> updateReview(ReviewEntity review) async { // <-- 추가!
+    final reviewModel = ReviewModel.fromEntity(review);
+    await dataSource.updateReview(reviewModel); // DataSource에 업데이트 요청
+  }
 }

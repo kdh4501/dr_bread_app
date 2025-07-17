@@ -28,3 +28,10 @@ class DeleteReview extends ReviewEvent {
   @override
   List<Object?> get props => [reviewId];
 }
+
+class UpdateReview extends ReviewEvent {
+  final ReviewEntity review; // 수정할 리뷰 (UID 포함)
+  const UpdateReview(this.review);
+  @override
+  List<Object?> get props => [review];
+}

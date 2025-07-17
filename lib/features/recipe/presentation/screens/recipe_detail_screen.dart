@@ -100,14 +100,19 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
     }
   }
 
-  void _showReviewInputDialog(BuildContext context, String recipeId, UserEntity currentUser) {
-    final TextEditingController reviewController = TextEditingController();
+  void _showReviewInputDialog(
+      BuildContext context,
+      String recipeId,
+      UserEntity currentUser, {
+      ReviewEntity? existingReview,  // 기존 리뷰가 있을 경우 (수정 모드)
+      }) {
+    final TextEditingController reviewController = TextEditingController(text: existingReview?.reviewText ?? '');
     double currentRating = 3.0; // 기본 평점
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog( // DialogTheme 자동 적용
-        title: const Text('리뷰 작성'),
+        title: Text(existingReview != null ? '리뷰 수정' : '리뷰 작성'),
         content: SingleChildScrollView( // 내용이 길어질 경우 스크롤 가능
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -147,19 +152,22 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                 );
                 return;
               }
-              // 리뷰 추가 이벤트
-              _reviewBloc.add(AddReview(
-                ReviewEntity(
-                  uid: '', // Firestore에서 자동 생성
-                  recipeId: recipeId,
-                  authorUid: currentUser.uid,
-                  authorDisplayName: currentUser.displayName,
-                  authorPhotoUrl: currentUser.photoUrl,
-                  rating: currentRating,
-                  reviewText: reviewController.text.trim(),
-                  createdAt: DateTime.now(),
-                ),
-              ));
+              final newReview = ReviewEntity(
+                uid: existingReview?.uid ?? '', // 수정 시 기존 UID 사용, 작성 시에는 '' (Firestore에서 자동 생성)
+                recipeId: recipeId,
+                authorUid: currentUser.uid,
+                authorDisplayName: currentUser.displayName,
+                authorPhotoUrl: currentUser.photoUrl,
+                rating: currentRating,
+                reviewText: reviewController.text.trim(),
+                createdAt: existingReview?.createdAt ?? DateTime.now(), // 수정 시 기존 생성 시간 유지
+              );
+
+              if (existingReview != null) {
+                _reviewBloc.add(UpdateReview(newReview)); // 리뷰 수정 이벤트
+              } else {
+                _reviewBloc.add(AddReview(newReview)); // 리뷰 추가 이벤트
+              }
               Navigator.pop(context); // 다이얼로그 닫기
             },
             child: const Text('작성'),
@@ -501,9 +509,19 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                           return const Center(child: CircularProgressIndicator());
                         }
                         if (reviewState is ReviewError) {
+                          final userFriendlyMessage = '리뷰를 불러오는 데 문제가 발생했습니다.\n잠시 후 다시 시도해 주세요.';
+                          // 실제 에러 메시지(reviewState.errorMessage)는 콘솔이나 로깅 서비스로!
+                          debugPrint('리뷰 로딩 오류: ${reviewState.errorMessage}');
+
                           return EmptyErrorStateWidget(
-                            message: reviewState.errorMessage ?? '리뷰를 불러오는데 실패했습니다.',
+                            message: userFriendlyMessage,
                             icon: Icons.error_outline,
+                            buttonText: '다시 시도',
+                              onButtonPressed: () {
+                                // RecipeDetailBloc의 detailState가 RecipeDetailLoaded일 때만 접근 가능
+                                final currentRecipeId = (context.read<RecipeDetailBloc>().state as RecipeDetailLoaded).recipe.uid;
+                            _reviewBloc.add(GetReviews(currentRecipeId)); // 현재 레시피 ID로 다시 리뷰 불러오기
+                          },
                             isError: true,
                           );
                         }
@@ -520,14 +538,22 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                             itemCount: reviewState.reviews.length,
                             itemBuilder: (context, index) {
                               final review = reviewState.reviews[index];
+                              final currentUserState = _authBloc.state;
                               final currentUserUid = (_authBloc.state is AuthAuthenticated) ? (_authBloc.state as AuthAuthenticated).user.uid : null;
+                              final isMyReview = currentUserUid == review.authorUid;
+
                               return ReviewItemWidget(
                                 review: review,
-                                isMyReview: currentUserUid == review.authorUid, // 내 리뷰인지 확인
+                                isMyReview: isMyReview, // 내 리뷰인지 확인
                                 onDelete: () {
                                   _reviewBloc.add(DeleteReview(review.uid)); // 리뷰 삭제 이벤트
                                 },
                                 // TODO: 리뷰 수정 기능 추가
+                                onEdit: isMyReview ? () {
+                                  // 해당 레시피 ID를 _showReviewInputDialog에 전달해야 함
+                                  final currentRecipeId = (context.read<RecipeDetailBloc>().state as RecipeDetailLoaded).recipe.uid;
+                                  _showReviewInputDialog(context, currentRecipeId, (currentUserState as AuthAuthenticated).user, existingReview: review);
+                                } : null,
                               );
                             },
                           );

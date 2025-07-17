@@ -36,6 +36,7 @@ import 'features/recipe/domain/usecases/get_recipes_usecase.dart';
 import 'features/recipe/domain/usecases/get_reviews_for_recipe_usecase.dart';
 import 'features/recipe/domain/usecases/search_recipes_usecase.dart';
 import 'features/recipe/domain/usecases/update_recipe_usecase.dart';
+import 'features/recipe/domain/usecases/update_review_usecase.dart';
 import 'features/recipe/domain/usecases/upload_image_usecase.dart';
 import 'features/recipe/presentation/bloc/recipe_action_bloc.dart';
 import 'features/recipe/presentation/bloc/recipe_detail_bloc.dart';
@@ -111,6 +112,7 @@ void main() async {
               getIt<AddReviewUseCase>(),
               getIt<GetReviewsForRecipeUseCase>(),
               getIt<DeleteReviewUseCase>(),
+              getIt<UpdateReviewUseCase>(),
             ),
           ),
         ],
@@ -148,6 +150,8 @@ Future<void> setupDependencies() async {
           () => FirestoreRecipeDataSource(getIt<FirebaseFirestore>())); // 의존성 주입
   getIt.registerLazySingleton<FirebaseStorageDataSource>( // FirebaseStorageDataSource 구현체 등록
           () => FirebaseStorageDataSource(getIt<FirebaseStorage>())); // 의존성 주입
+  getIt.registerLazySingleton<UpdateReviewUseCase>(
+          () => UpdateReviewUseCase(getIt<ReviewRepository>()));
 
   // Repository 구현체 등록 (Singleton)
   // Repository는 여러 UseCase에서 공유되므로 Singleton으로 등록

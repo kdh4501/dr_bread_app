@@ -5,4 +5,5 @@ abstract class ReviewRepository {
   Future<String> addReview(ReviewEntity review);
   Stream<List<ReviewEntity>> getReviewsForRecipe(String recipeId);
   Future<void> deleteReview(String reviewId);
+  Future<void> updateReview(ReviewEntity review);
 }

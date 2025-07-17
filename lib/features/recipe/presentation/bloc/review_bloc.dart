@@ -4,6 +4,7 @@ import 'dart:async';
 import '../../domain/usecases/add_review_usecase.dart';
 import '../../domain/usecases/get_reviews_for_recipe_usecase.dart';
 import '../../domain/usecases/delete_review_usecase.dart';
+import '../../domain/usecases/update_review_usecase.dart';
 import 'review_event.dart';
 import 'review_state.dart';
 
@@ -11,15 +12,18 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
   final AddReviewUseCase _addReviewUseCase;
   final GetReviewsForRecipeUseCase _getReviewsForRecipeUseCase;
   final DeleteReviewUseCase _deleteReviewUseCase;
+  final UpdateReviewUseCase _updateReviewUseCase;
 
   ReviewBloc(
       this._addReviewUseCase,
       this._getReviewsForRecipeUseCase,
       this._deleteReviewUseCase,
+      this._updateReviewUseCase,
       ) : super(ReviewInitial()) {
     on<GetReviews>(_onGetReviews);
     on<AddReview>(_onAddReview);
     on<DeleteReview>(_onDeleteReview);
+    on<UpdateReview>(_onUpdateReview);
   }
 
   Future<void> _onGetReviews(GetReviews event, Emitter<ReviewState> emit) async {
@@ -63,6 +67,20 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
       emit(ReviewLoaded(reviews: updatedReviews));
     } catch (e) {
       emit(ReviewError(errorMessage: '리뷰 삭제 실패: ${e.toString()}', reviews: state.reviews));
+    }
+  }
+
+  Future<void> _onUpdateReview(UpdateReview event, Emitter<ReviewState> emit) async {
+    emit(ReviewLoading(reviews: state.reviews));
+    try {
+      await _updateReviewUseCase(event.review);
+      // 업데이트된 리뷰를 기존 목록에서 찾아 교체
+      final updatedReviews = state.reviews.map((r) =>
+      r.uid == event.review.uid ? event.review : r).toList();
+      emit(ReviewLoaded(reviews: updatedReviews));
+      // Cloud Function이 자동으로 통계를 업데이트할 것임
+    } catch (e) {
+      emit(ReviewError(errorMessage: '리뷰 수정 실패: ${e.toString()}', reviews: state.reviews));
     }
   }
 
