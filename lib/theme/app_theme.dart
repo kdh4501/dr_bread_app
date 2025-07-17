@@ -98,7 +98,7 @@ ThemeData bbangbaksaTheme = ThemeData(
   ),
   floatingActionButtonTheme: FloatingActionButtonThemeData(
     backgroundColor: AppColors.paleGreen, // 보조 색상
-    foregroundColor: AppColors.lightSalmon, // 메인 색상
+    foregroundColor: AppColors.charcoal, // 메인 색상
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32.0)), // FAB는 더 둥글게 (거의 원형)
     elevation: 6.0,
   ),
