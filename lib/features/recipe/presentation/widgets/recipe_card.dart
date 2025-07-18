@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../domain/entities/recipe.dart'; // RecipeEntity 임포트
 import 'package:cached_network_image/cached_network_image.dart'; // 이미지 캐싱 패키지 (선택, 권장)
@@ -105,14 +106,30 @@ class RecipeCard extends StatelessWidget {
 
                 const SizedBox(height: kSpacingMedium), // 이미지와 제목 사이 간격
 
-                // 레시피 제목
-                Text(
-                  recipe.title, // 레시피 객체에서 제목 가져옴
-                  style: textTheme.titleMedium?.copyWith(
-                    color: colorScheme.onSurface,
-                  ),
-                  maxLines: 2, // 제목이 길면 한 줄로 제한
-                  overflow: TextOverflow.ellipsis, // 넘치면 ... 으로 표시
+                // 레시피 제목 및 즐겨찾기 아이콘
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        recipe.title, // 레시피 객체에서 제목 가져옴
+                        style: textTheme.titleMedium?.copyWith(
+                          color: colorScheme.onSurface,
+                        ),
+                        maxLines: 2, // 제목이 길면 한 줄로 제한
+                        overflow: TextOverflow.ellipsis, // 넘치면 ... 으로 표시
+                      ),
+                    ),
+                    // 즐겨찾기 아이콘 추가
+                    if (recipe.isFavorite == true) // isFavorite가 true일 때만 표시
+                      Padding(
+                        padding: const EdgeInsets.only(left: kSpacingSmall), // 좌측 여백
+                        child: Icon(
+                          Icons.favorite, // 채워진 하트
+                          size: kIconSizeMedium,
+                          color: AppColors.redAccent, // 강조를 위해 직접 RedAccent 색상 사용 (테마에 없으면 colorScheme.error 등)
+                        ),
+                      ),
+                  ],
                 ),
 
                 const SizedBox(height: kSpacingSmall),
